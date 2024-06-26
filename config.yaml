@@ -1,0 +1,8 @@
+LogLevel: "debug"
+Listen: ":8797"
+EsConfig:
+  Enable: true
+  Url: "http://xcon.top:9200"
+  Index: "server_log_v1"
+  Username: "elastic"
+  Password: "1625167628@xcon"

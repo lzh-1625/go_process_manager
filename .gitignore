@@ -1,0 +1,7 @@
+info.log
+msm*
+templates
+vue-minecraft/node_modules
+data.db
+route/template
+.data*
