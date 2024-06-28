@@ -1,13 +1,16 @@
 package route
 
 import (
+	"embed"
 	"io"
+	"io/fs"
 	"msm/api"
 	"msm/config"
 	"msm/consts/permission"
 	"msm/consts/role"
 	"msm/log"
 	"msm/route/middle"
+	"msm/utils"
 	"net/http"
 
 	"github.com/gin-contrib/pprof"
@@ -24,15 +27,18 @@ func Route() {
 	r.Run(config.CF.Listen)
 }
 
+//go:embed templates
+var f embed.FS
+
 func staticInit(r *gin.Engine) {
 	r.NoRoute(func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", gin.H{})
+		b, _ := f.ReadFile("templates/index.html")
+		c.Data(http.StatusOK, "text/html; charset=utf-8", b)
 	})
-	r.Static("/js", "templates/js")
-	r.Static("/css", "templates/css")
-	r.Static("/media", "templates/media")
-	r.Static("/fonts", "templates/fonts")
-	r.LoadHTMLFiles("templates/index.html")
+	r.StaticFS("/js", http.FS(utils.UnwarpIgnore(fs.Sub(f, "templates/js"))))
+	r.StaticFS("/css", http.FS(utils.UnwarpIgnore(fs.Sub(f, "templates/css"))))
+	r.StaticFS("/media", http.FS(utils.UnwarpIgnore(fs.Sub(f, "templates/media"))))
+	r.StaticFS("/fonts", http.FS(utils.UnwarpIgnore(fs.Sub(f, "templates/fonts"))))
 }
 
 func pprofInit(r *gin.Engine) {

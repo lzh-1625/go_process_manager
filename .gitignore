@@ -1,7 +1,3 @@
 info.log
-msm*
-templates
-vue-minecraft/node_modules
+xmp*
 data.db
-route/template
-.data*

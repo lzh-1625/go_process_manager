@@ -104,7 +104,7 @@ func (p *ProcessPty) readInit() {
 				p.bufHanle(buf[:n])
 				if p.IsUsing.Load() {
 					p.ws.wsMux.Lock()
-					p.ws.wsConnect.WriteMessage(websocket.TextMessage, buf[:n])
+					p.ws.wsConnect.WriteMessage(websocket.BinaryMessage, buf[:n])
 					p.ws.wsMux.Unlock()
 				}
 			}
@@ -113,7 +113,7 @@ func (p *ProcessPty) readInit() {
 }
 
 func (p *ProcessPty) ReadCache(ws *websocket.Conn) {
-	ws.WriteMessage(websocket.TextMessage, p.cacheBytesBuf.Bytes())
+	ws.WriteMessage(websocket.BinaryMessage, p.cacheBytesBuf.Bytes())
 }
 
 func (p *ProcessPty) bufHanle(b []byte) {

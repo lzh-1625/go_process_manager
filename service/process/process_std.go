@@ -107,7 +107,7 @@ func (p *ProcessStd) pInit() {
 
 func (p *ProcessStd) ReadCache(ws *websocket.Conn) {
 	for _, line := range p.cacheLine {
-		ws.WriteMessage(websocket.TextMessage, []byte(line))
+		ws.WriteMessage(websocket.BinaryMessage, []byte(line))
 	}
 }
 
@@ -128,7 +128,7 @@ func (p *ProcessStd) readInit() {
 				output = p.Read()
 				if p.IsUsing.Load() && output != "" {
 					p.ws.wsMux.Lock()
-					p.ws.wsConnect.WriteMessage(websocket.TextMessage, []byte(output))
+					p.ws.wsConnect.WriteMessage(websocket.BinaryMessage, []byte(output))
 					p.ws.wsMux.Unlock()
 				}
 			}
