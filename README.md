@@ -16,6 +16,6 @@
 chmod 777 ./xpm
 ./xpm
 ```
-##web界面
+## web界面
 访问http://[ip]:8797
 默认账号密码 root/root
