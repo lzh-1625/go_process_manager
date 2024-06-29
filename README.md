@@ -47,4 +47,3 @@ chmod 777 ./xpm
 
 ### 日志
 ![image](https://github.com/lzh-1625/x_process_manager/assets/59822923/6af8e228-7709-45c5-aba8-4b61dc825026)
-
