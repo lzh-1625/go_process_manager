@@ -37,7 +37,7 @@ func InitEs() bool {
 			log.Logger.Error("es启动失败", err)
 			config.CF.EsEnable = false
 		} else {
-			return true 
+			return true
 		}
 	} else {
 		log.Logger.Debug("不使用es")
@@ -121,12 +121,16 @@ func (e *esService) Search(req model.GetLogReq) model.LogResp {
 func (e *esService) buildQueryBody(req model.GetLogReq) model.QueryBody {
 	result := model.QueryBody{}
 	if req.TimeRange.EndTime != 0 || req.TimeRange.StartTime != 0 {
+		time := map[string]any{}
+		if req.TimeRange.StartTime != 0 {
+			time["gte"] = req.TimeRange.StartTime
+		}
+		if req.TimeRange.EndTime != 0 {
+			time["lte"] = req.TimeRange.EndTime
+		}
 		result.Query.Bool.Must = append(result.Query.Bool.Must, map[string]any{
 			"range": map[string]any{
-				"time": map[string]any{
-					"gte": req.TimeRange.StartTime,
-					"lte": req.TimeRange.EndTime,
-				},
+				"time": time,
 			},
 		})
 	}

@@ -1,3 +1,6 @@
 info.log
-xmp*
+msm*
+vue-minecraft/node_modules
 data.db
+.data*
+config.yaml

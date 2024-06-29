@@ -7,6 +7,7 @@ import (
 	"msm/config"
 	"msm/log"
 	"msm/model"
+	"msm/utils"
 	"os/exec"
 	"strings"
 	"time"
@@ -107,7 +108,7 @@ func (p *ProcessStd) pInit() {
 
 func (p *ProcessStd) ReadCache(ws *websocket.Conn) {
 	for _, line := range p.cacheLine {
-		ws.WriteMessage(websocket.BinaryMessage, []byte(line))
+		ws.WriteMessage(websocket.TextMessage, []byte(line))
 	}
 }
 
@@ -128,7 +129,7 @@ func (p *ProcessStd) readInit() {
 				output = p.Read()
 				if p.IsUsing.Load() && output != "" {
 					p.ws.wsMux.Lock()
-					p.ws.wsConnect.WriteMessage(websocket.BinaryMessage, []byte(output))
+					p.ws.wsConnect.WriteMessage(websocket.TextMessage, []byte(output))
 					p.ws.wsMux.Unlock()
 				}
 			}
@@ -137,7 +138,7 @@ func (p *ProcessStd) readInit() {
 }
 func (p *ProcessStd) Read() string {
 	if p.stdout.Scan() {
-		output := p.stdout.Text()
+		output := utils.RemoveNotValidUtf8InString(p.stdout.Text())
 		p.logReportHandler(output)
 		p.cacheLine = p.cacheLine[1:]
 		p.cacheLine = append(p.cacheLine, output)
