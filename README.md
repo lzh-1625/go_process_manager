@@ -1,49 +1,49 @@
-基于golang的进程管理工具
 
-# 基础功能
-- 类似screen的进程管理
-- 提供web ui可视化操作
-- 基于Elasticsearch的日志管理
-- 三种角色的权限管理
-- 进程性能监控
-- 进程状态推送
+# Golang-based Process Management Tool
 
-# 终端类型
-## pty 
-基于伪终端实现，支持ansi字符、快捷键，仅支持linux
-## std
-基于stdin、stdout管道实现，支持所有平台
+## Basic Features
+- Similar to screen's process management
+- Web UI for visual operations
+- Log management based on Elasticsearch
+- Role-based permission management (three roles)
+- Process performance monitoring
+- Process state notifications
 
-# 角色
+## Terminal Types
+### pty
+Implemented based on pseudo terminal, supporting ANSI characters and shortcuts. Only supports Linux.
+### std
+Implemented based on stdin and stdout pipes, supporting all platforms.
 
-| 角色  | 角色管理 | 进程创建 | 操控进程 | 日志查看 |
+## Roles
+
+| Role  | Role Management | Process Creation | Process Control | Log View |
 | ----- | -------- | -------- | -------- | ---- |
 | root  | ✔        | ✔        | ✔        | ✔    |
 | admin | ×        | ×        | ✔        | ✔    |
-| user  | ×        | ×        | 需配置   | ×    |
+| user  | ×        | ×        | Configurable | ×    |
 
-
-# 如何使用
-## 启动进程
-### windows
-下载windows版本双击运行
-### linux
-下载linux版本
-使用命令
+## How to Use
+### Starting a Process
+#### Windows
+Download the Windows version and double-click to run.
+#### Linux
+Download the Linux version.
+Use the command:
 ```
 chmod 777 ./xpm
 ./xpm
 ```
-## web界面
-访问http://[ip]:8797
-默认账号密码 root/root
+### Web Interface
+Access http://[ip]:8797
+Default username and password: root/root
 
-# 界面
-### 进程
+## Interface
+### Process
 ![image](https://github.com/lzh-1625/x_process_manager/assets/59822923/50f31b99-41d4-4d8c-88fe-20c978385155)
 
-### 终端
+### Terminal
 ![image](https://github.com/lzh-1625/x_process_manager/assets/59822923/63eb6bec-353f-4d12-a1d9-95d89fccdac3)
 
-### 日志
+### Log
 ![image](https://github.com/lzh-1625/x_process_manager/assets/59822923/6af8e228-7709-45c5-aba8-4b61dc825026)
