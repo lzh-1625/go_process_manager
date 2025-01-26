@@ -1,0 +1,8 @@
+info.log
+vue-minecraft/node_modules
+data.db
+.data*
+config.yaml
+ltest
+gtest
+mtest
