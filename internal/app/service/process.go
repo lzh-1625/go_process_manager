@@ -49,6 +49,7 @@ type ProcessBase struct {
 		changControlTime time.Time
 	}
 	ws     map[string]ConnectInstance
+	wsLock sync.Mutex
 	Config struct {
 		AutoRestart       bool
 		compulsoryRestart bool
@@ -178,10 +179,14 @@ func (p *ProcessBase) AddConn(user string, c ConnectInstance) {
 		log.Logger.Error("已存在连接")
 		return
 	}
+	p.wsLock.Lock()
+	defer p.wsLock.Unlock()
 	p.ws[user] = c
 }
 
 func (p *ProcessBase) DeleteConn(user string) {
+	p.wsLock.Lock()
+	defer p.wsLock.Unlock()
 	delete(p.ws, user)
 }
 

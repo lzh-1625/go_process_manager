@@ -109,9 +109,14 @@ func (p *ProcessStd) readInit() {
 		default:
 			{
 				output = p.Read()
+				if len(p.ws) == 0 {
+					continue
+				}
+				p.wsLock.Lock()
 				for _, v := range p.ws {
 					v.WriteString(output)
 				}
+				p.wsLock.Unlock()
 			}
 		}
 	}

@@ -103,9 +103,14 @@ func (p *ProcessPty) readInit() {
 			{
 				n, _ := p.pty.Read(buf)
 				p.bufHanle(buf[:n])
+				if len(p.ws) == 0 {
+					continue
+				}
+				p.wsLock.Lock()
 				for _, v := range p.ws {
 					v.Write(buf[:n])
 				}
+				p.wsLock.Unlock()
 			}
 		}
 	}
