@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"sync"
 	"time"
 
 	"github.com/lzh-1625/go_process_manager/internal/app/constants"
@@ -21,20 +20,15 @@ var WsApi = new(wsApi)
 
 type WsConnetInstance struct {
 	WsConnect  *websocket.Conn
-	WsMux      sync.Mutex
 	CancelFunc context.CancelFunc
 }
 
 func (w *WsConnetInstance) Write(b []byte) {
-	w.WsMux.Lock()
 	w.WsConnect.WriteMessage(websocket.BinaryMessage, b)
-	w.WsMux.Unlock()
 }
 
 func (w *WsConnetInstance) WriteString(s string) {
-	w.WsMux.Lock()
 	w.WsConnect.WriteMessage(websocket.TextMessage, []byte(s))
-	w.WsMux.Unlock()
 }
 func (w *WsConnetInstance) Cancel() {
 	w.CancelFunc()
@@ -66,7 +60,6 @@ func (w *wsApi) WebsocketHandle(ctx *gin.Context) {
 	wsCtx, cancel := context.WithCancel(context.Background())
 	wci := &WsConnetInstance{
 		WsConnect:  conn,
-		WsMux:      sync.Mutex{},
 		CancelFunc: cancel,
 	}
 	proc.ReadCache(wci)
