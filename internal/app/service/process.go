@@ -56,6 +56,7 @@ type ProcessBase struct {
 		statuPush         bool
 		logReport         bool
 		cgroupEnable      bool
+		PushIds           []int
 		memoryLimit       *float32
 		cpuLimit          *float32
 	}
@@ -240,7 +241,7 @@ func (p *ProcessBase) push(message string) {
 			"{$message}": message,
 			"{$status}":  strconv.Itoa(int(p.State.State)),
 		}
-		PushService.Push(messagePlaceholders)
+		PushService.Push(p.Config.PushIds, messagePlaceholders)
 	}
 }
 

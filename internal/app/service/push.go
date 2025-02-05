@@ -13,8 +13,8 @@ type pushService struct{}
 
 var PushService = new(pushService)
 
-func (p *pushService) Push(placeholders map[string]string) {
-	pl := repository.PushRepository.GetPushList()
+func (p *pushService)  Push(ids []int, placeholders map[string]string) {
+	pl := repository.PushRepository.GetPushConfigByIds(ids)
 	for _, v := range pl {
 		if v.Enable {
 			if v.Method == http.MethodGet {

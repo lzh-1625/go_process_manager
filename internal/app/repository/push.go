@@ -31,3 +31,8 @@ func (p *pushRepository) DeletePushConfig(id int) error {
 		Id: int64(id),
 	}).Error
 }
+
+func (p *pushRepository) GetPushConfigByIds(ids []int) (result []model.Push) {
+	db.Model(&model.Push{}).Where("id in ?", ids).Find(&result)
+	return
+}
