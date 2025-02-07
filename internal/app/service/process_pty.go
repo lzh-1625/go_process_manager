@@ -78,13 +78,11 @@ func (p *ProcessPty) SetTerminalSize(cols, rows int) {
 }
 
 func (p *ProcessPty) WriteBytes(input []byte) (err error) {
-	p.logReportHandler(config.CF.ProcessInputPrefix + string(input))
 	_, err = p.pty.Write(input)
 	return
 }
 
 func (p *ProcessPty) Write(input string) (err error) {
-	p.logReportHandler(config.CF.ProcessInputPrefix + input)
 	_, err = p.pty.Write([]byte(input))
 	return
 }

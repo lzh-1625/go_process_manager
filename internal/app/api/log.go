@@ -1,6 +1,8 @@
 package api
 
 import (
+	"slices"
+
 	"github.com/lzh-1625/go_process_manager/internal/app/constants"
 	"github.com/lzh-1625/go_process_manager/internal/app/model"
 	"github.com/lzh-1625/go_process_manager/internal/app/repository"
@@ -14,22 +16,19 @@ type logApi struct{}
 var LogApi = new(logApi)
 
 func (a *logApi) GetLog(ctx *gin.Context, req model.GetLogReq) {
-	filterName := make([]string, 0, len(req.FilterName))
-	processNameList := repository.PermissionRepository.GetProcessNameByPermission(getUserName(ctx), constants.OPERATION_LOG)
-	if len(filterName) != 0 {
-		for _, v := range processNameList {
-			for _, m := range req.FilterName {
-				if v == m {
-					filterName = append(filterName, m)
-					break
-				}
-			}
-		}
+	if isAdmin(ctx) {
+		rOk(ctx, "Query successful!", service.LogServiceImpl.Search(req, req.FilterName...))
 	} else {
-		filterName = append(filterName, processNameList...)
+		processNameList := repository.PermissionRepository.GetProcessNameByPermission(getUserName(ctx), constants.OPERATION_LOG)
+		filterName := slices.DeleteFunc(req.FilterName, func(s string) bool {
+			return !slices.Contains(processNameList, s)
+		})
+		if len(filterName) == 0 {
+			filterName = processNameList
+		}
+		errCheck(ctx, len(filterName) == 0, "No information found!")
+		rOk(ctx, "Query successful!", service.LogServiceImpl.Search(req, filterName...))
 	}
-	errCheck(ctx, !isAdmin(ctx) && len(filterName) == 0, "No information found!")
-	rOk(ctx, "Query successful!", service.LogServiceImpl.Search(req, filterName...))
 }
 
 func (a *logApi) GetRunningLog(ctx *gin.Context) {
