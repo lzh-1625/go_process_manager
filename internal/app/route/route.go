@@ -1,7 +1,6 @@
 package route
 
 import (
-	"embed"
 	"io/fs"
 	"net/http"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/lzh-1625/go_process_manager/internal/app/constants"
 	"github.com/lzh-1625/go_process_manager/internal/app/middle"
 	"github.com/lzh-1625/go_process_manager/log"
+	"github.com/lzh-1625/go_process_manager/resources"
 	"github.com/lzh-1625/go_process_manager/utils"
 
 	"github.com/gin-contrib/pprof"
@@ -29,20 +29,17 @@ func Route() {
 	log.Logger.Fatalw("服务器启动失败", "err", err)
 }
 
-//go:embed templates
-var f embed.FS
-
 func staticInit(r *gin.Engine) {
 	r.NoRoute(func(c *gin.Context) {
-		b, _ := f.ReadFile("templates/index.html")
+		b, _ := resources.Templates.ReadFile("templates/index.html")
 		c.Data(http.StatusOK, "text/html; charset=utf-8", b)
 	})
-	r.StaticFS("/js", http.FS(utils.UnwarpIgnore(fs.Sub(f, "templates/js"))))
-	r.StaticFS("/css", http.FS(utils.UnwarpIgnore(fs.Sub(f, "templates/css"))))
-	r.StaticFS("/media", http.FS(utils.UnwarpIgnore(fs.Sub(f, "templates/media"))))
-	r.StaticFS("/fonts", http.FS(utils.UnwarpIgnore(fs.Sub(f, "templates/fonts"))))
+	r.StaticFS("/js", http.FS(utils.UnwarpIgnore(fs.Sub(resources.Templates, "templates/js"))))
+	r.StaticFS("/css", http.FS(utils.UnwarpIgnore(fs.Sub(resources.Templates, "templates/css"))))
+	r.StaticFS("/media", http.FS(utils.UnwarpIgnore(fs.Sub(resources.Templates, "templates/media"))))
+	r.StaticFS("/fonts", http.FS(utils.UnwarpIgnore(fs.Sub(resources.Templates, "templates/fonts"))))
 	r.GET("/favicon.ico", func(ctx *gin.Context) {
-		ctx.Data(200, "image/x-icon", utils.UnwarpIgnore(f.ReadFile("templates/favicon.ico")))
+		ctx.Data(200, "image/x-icon", utils.UnwarpIgnore(resources.Templates.ReadFile("templates/favicon.ico")))
 	})
 }
 
