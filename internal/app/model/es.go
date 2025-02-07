@@ -91,7 +91,7 @@ type ProcessLog struct {
 	Id    int    `json:"id,omitempty" gorm:"primaryKey;autoIncrement;column:id" `
 	Log   string `json:"log" gorm:"column:log" type:"text"`
 	Time  int64  `json:"time" gorm:"column:time" type:"long"`
-	Name  string `json:"name" gorm:"column:name" type:"keyword"`
+	Name  string `json:"name" gorm:"column:name" type:"text"`
 	Using string `json:"using" gorm:"column:using" type:"keyword"`
 }
 
