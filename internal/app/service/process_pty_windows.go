@@ -136,7 +136,6 @@ func (p *ProcessPty) bufHanle(b []byte) {
 
 func (p *ProcessPty) doOnInit() {
 	p.cacheBytesBuf = bytes.NewBuffer(make([]byte, config.CF.ProcessMsgCacheBufLimit))
-	p.ProcessBase.Pid = utils.UnwarpIgnore(p.pty.Pid())
 }
 
 func NewProcessPty(pconfig model.Process) *ProcessBase {
