@@ -20,7 +20,6 @@ import (
 
 type Process interface {
 	ReadCache(ConnectInstance)
-	Kill() error
 	Write(string) error
 	WriteBytes([]byte) error
 	readInit()
