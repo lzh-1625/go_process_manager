@@ -29,7 +29,6 @@ type Process interface {
 	initCgroup()
 	Start() error
 	Type() constants.TerminalType
-	Wait() (*os.ProcessState, error)
 	SetTerminalSize(int, int)
 }
 
