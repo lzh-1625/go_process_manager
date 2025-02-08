@@ -72,7 +72,7 @@ func (p *ProcessStd) Start() (err error) {
 		return err
 	}
 	log.Logger.Infow("进程启动成功", "重启次数", p.State.restartTimes)
-	p.cmd = cmd
+	p.p = cmd.Process
 	p.pInit()
 	p.push("进程启动成功")
 	return nil
@@ -80,6 +80,10 @@ func (p *ProcessStd) Start() (err error) {
 
 func (p *ProcessStd) doOnInit() {
 	p.cacheLine = make([]string, config.CF.ProcessMsgCacheLinesLimit)
+}
+
+func (p *ProcessStd) initCgroup() {
+	log.Logger.Debugw("不支持cgroup")
 }
 
 func (p *ProcessStd) ReadCache(ws ConnectInstance) {
