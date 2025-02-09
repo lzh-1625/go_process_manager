@@ -9,7 +9,7 @@ type Process struct {
 	Cwd               string                 `gorm:"column:cwd" json:"cwd"`
 	AutoRestart       bool                   `gorm:"column:auto_restart" json:"autoRestart"`
 	CompulsoryRestart bool                   `gorm:"column:compulsory_restart" json:"compulsoryRestart"`
-	Push              bool                   `gorm:"column:push" json:"push"`
+	PushIds           string                 `gorm:"column:push_ids" json:"pushIds"`
 	LogReport         bool                   `gorm:"column:log_report" json:"logReport"`
 	TermType          constants.TerminalType `gorm:"column:term_type" json:"termType"`
 	CgroupEnable      bool                   `gorm:"column:cgroup_enable" json:"cgroupEnable"`

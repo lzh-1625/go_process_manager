@@ -14,6 +14,7 @@ import (
 	"github.com/lzh-1625/go_process_manager/internal/app/middle"
 	"github.com/lzh-1625/go_process_manager/internal/app/model"
 	"github.com/lzh-1625/go_process_manager/log"
+	"github.com/lzh-1625/go_process_manager/utils"
 
 	pu "github.com/shirou/gopsutil/process"
 )
@@ -49,10 +50,9 @@ type ProcessBase struct {
 	Config struct {
 		AutoRestart       bool
 		compulsoryRestart bool
-		statuPush         bool
+		PushIds           []int
 		logReport         bool
 		cgroupEnable      bool
-		PushIds           []int
 		memoryLimit       *float32
 		cpuLimit          *float32
 	}
@@ -218,7 +218,7 @@ func (p *ProcessBase) VerifyControl() bool {
 func (p *ProcessBase) setProcessConfig(pconfig model.Process) {
 	p.Config.AutoRestart = pconfig.AutoRestart
 	p.Config.logReport = pconfig.LogReport
-	p.Config.statuPush = pconfig.Push
+	p.Config.PushIds = utils.JsonStrToStruct[[]int](pconfig.PushIds)
 	p.Config.compulsoryRestart = pconfig.CompulsoryRestart
 	p.Config.cgroupEnable = pconfig.CgroupEnable
 	p.Config.memoryLimit = pconfig.MemoryLimit
@@ -230,7 +230,7 @@ func (p *ProcessBase) ResetRestartTimes() {
 }
 
 func (p *ProcessBase) push(message string) {
-	if p.Config.statuPush {
+	if len(p.Config.PushIds) != 0 {
 		messagePlaceholders := map[string]string{
 			"{$name}":    p.Name,
 			"{$user}":    p.GetUserString(),

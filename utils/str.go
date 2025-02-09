@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/rand"
 	"regexp"
@@ -75,4 +76,10 @@ func (k *KVStr) Build() string {
 		strList = append(strList, fmt.Sprintf("%s:%v", key, k.m[key]))
 	}
 	return strings.Join(strList, " , ")
+}
+
+func JsonStrToStruct[T any](str string) T {
+	var data T
+	json.Unmarshal([]byte(str), &data)
+	return data
 }

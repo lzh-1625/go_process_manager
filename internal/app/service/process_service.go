@@ -10,6 +10,7 @@ import (
 	"github.com/lzh-1625/go_process_manager/internal/app/model"
 	"github.com/lzh-1625/go_process_manager/internal/app/repository"
 	"github.com/lzh-1625/go_process_manager/log"
+	"github.com/lzh-1625/go_process_manager/utils"
 )
 
 type processCtlService struct {
@@ -200,7 +201,7 @@ func (p *processCtlService) UpdateProcessConfig(config model.Process) error {
 	}
 	defer result.Lock.Unlock()
 	result.Config.logReport = config.LogReport
-	result.Config.statuPush = config.Push
+	result.Config.PushIds = utils.JsonStrToStruct[[]int](config.PushIds)
 	result.Config.cgroupEnable = config.CgroupEnable
 	result.Config.memoryLimit = config.MemoryLimit
 	result.Config.cpuLimit = config.CpuLimit
