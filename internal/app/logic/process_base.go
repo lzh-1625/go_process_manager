@@ -26,7 +26,6 @@ type Process interface {
 	readInit()
 	doOnInit()
 	doOnKilled()
-	initCgroup()
 	Start() error
 	Type() constants.TerminalType
 	SetTerminalSize(int, int)

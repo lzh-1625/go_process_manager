@@ -82,10 +82,6 @@ func (p *ProcessStd) doOnInit() {
 	p.cacheLine = make([]string, config.CF.ProcessMsgCacheLinesLimit)
 }
 
-func (p *ProcessStd) initCgroup() {
-	log.Logger.Debugw("不支持cgroup")
-}
-
 func (p *ProcessStd) ReadCache(ws ConnectInstance) {
 	for _, line := range p.cacheLine {
 		ws.WriteString(line)

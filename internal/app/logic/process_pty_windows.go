@@ -117,10 +117,6 @@ func (p *ProcessPty) readInit() {
 	}
 }
 
-func (p *ProcessPty) initCgroup() {
-	log.Logger.Debugw("不支持cgroup")
-}
-
 func (p *ProcessPty) ReadCache(ws ConnectInstance) {
 	ws.Write(p.cacheBytesBuf.Bytes())
 }
