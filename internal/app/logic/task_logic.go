@@ -1,4 +1,4 @@
-package service
+package logic
 
 import (
 	"context"
@@ -15,13 +15,13 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-type taskService struct {
+type taskLogic struct {
 	taskJobMap sync.Map
 }
 
-var TaskService taskService
+var TaskLogic taskLogic
 
-func (t *taskService) InitTaskJob() {
+func (t *taskLogic) InitTaskJob() {
 	for _, v := range repository.TaskRepository.GetAllTask() {
 		tj := &model.TaskJob{
 			Task:      &v,
@@ -43,7 +43,7 @@ func (t *taskService) InitTaskJob() {
 	}
 }
 
-func (t *taskService) cronHandle(data *model.TaskJob) func() {
+func (t *taskLogic) cronHandle(data *model.TaskJob) func() {
 	return func() {
 		log.Logger.AddAdditionalInfo("id", data.Task.Id)
 		defer log.Logger.DeleteAdditionalInfo(1)
@@ -60,7 +60,7 @@ func (t *taskService) cronHandle(data *model.TaskJob) func() {
 	}
 }
 
-func (t *taskService) StopTaskJob(id int) error {
+func (t *taskLogic) StopTaskJob(id int) error {
 	c, ok := t.taskJobMap.Load(id)
 	if !ok {
 		return errors.New("id不存在")
@@ -72,7 +72,7 @@ func (t *taskService) StopTaskJob(id int) error {
 	return nil
 }
 
-func (t *taskService) StartTaskJob(id int) error {
+func (t *taskLogic) StartTaskJob(id int) error {
 	c, ok := t.taskJobMap.Load(id)
 	if !ok {
 		return errors.New("id不存在")
@@ -82,7 +82,7 @@ func (t *taskService) StartTaskJob(id int) error {
 	return nil
 }
 
-func (t *taskService) GetAllTaskJob() []model.TaskVo {
+func (t *taskLogic) GetAllTaskJob() []model.TaskVo {
 	result := repository.TaskRepository.GetAllTaskWithProcessName()
 	for i, v := range result {
 		item, ok := t.taskJobMap.Load(v.Id)
@@ -97,7 +97,7 @@ func (t *taskService) GetAllTaskJob() []model.TaskVo {
 	return result
 }
 
-func (t *taskService) DeleteTask(id int) (err error) {
+func (t *taskLogic) DeleteTask(id int) (err error) {
 	t.StopTaskJob(id)
 	t.EditTaskEnable(id, false)
 	t.taskJobMap.Delete(id)
@@ -108,7 +108,7 @@ func (t *taskService) DeleteTask(id int) (err error) {
 	return
 }
 
-func (t *taskService) CreateTask(data model.Task) error {
+func (t *taskLogic) CreateTask(data model.Task) error {
 	tj := &model.TaskJob{
 		Task:      &data,
 		StartTime: time.Now(),
@@ -132,7 +132,7 @@ func (t *taskService) CreateTask(data model.Task) error {
 	return nil
 }
 
-func (t *taskService) EditTask(data model.Task) error {
+func (t *taskLogic) EditTask(data model.Task) error {
 	if data.Cron != nil {
 		if _, err := cron.ParseStandard(*data.Cron); err != nil {
 			return err
@@ -147,7 +147,7 @@ func (t *taskService) EditTask(data model.Task) error {
 	return repository.TaskRepository.EditTask(data)
 }
 
-func (t *taskService) EditTaskEnable(id int, status bool) error {
+func (t *taskLogic) EditTaskEnable(id int, status bool) error {
 	v, ok := t.taskJobMap.Load(id)
 	if !ok {
 		return errors.New("don't exist this task id")
@@ -165,7 +165,7 @@ func (t *taskService) EditTaskEnable(id int, status bool) error {
 	return nil
 }
 
-func (t *taskService) CreateApiKey(id int) error {
+func (t *taskLogic) CreateApiKey(id int) error {
 	data, err := repository.TaskRepository.GetTaskById(id)
 	if err != nil {
 		return err
@@ -176,7 +176,7 @@ func (t *taskService) CreateApiKey(id int) error {
 	return nil
 }
 
-func (t *taskService) RunTaskByKey(key string) error {
+func (t *taskLogic) RunTaskByKey(key string) error {
 	data, err := repository.TaskRepository.GetTaskByKey(key)
 	if err != nil {
 		return errors.New("don't exist key")
@@ -185,7 +185,7 @@ func (t *taskService) RunTaskByKey(key string) error {
 	return nil
 }
 
-func (t *taskService) RunTaskByTriggerEvent(processName string, event constants.ProcessState) {
+func (t *taskLogic) RunTaskByTriggerEvent(processName string, event constants.ProcessState) {
 	taskList := repository.TaskRepository.GetTriggerTask(processName, event)
 	if len(taskList) == 0 {
 		return

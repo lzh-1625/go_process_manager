@@ -1,4 +1,4 @@
-package service
+package logic
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 	"github.com/lzh-1625/go_process_manager/log"
 )
 
-func (t *taskService) RunTaskById(id int) error {
+func (t *taskLogic) RunTaskById(id int) error {
 	v, ok := t.taskJobMap.Load(id)
 	if !ok {
 		return errors.New("don't exist task id")
@@ -28,7 +28,7 @@ func (t *taskService) RunTaskById(id int) error {
 	return nil
 }
 
-func (t *taskService) run(ctx context.Context, data *model.TaskJob) {
+func (t *taskLogic) run(ctx context.Context, data *model.TaskJob) {
 	data.Running = true
 	middle.TaskWaitCond.Trigger()
 	defer func() {
@@ -42,7 +42,7 @@ func (t *taskService) run(ctx context.Context, data *model.TaskJob) {
 	if data.Task.Condition == constants.PASS {
 		ok = true
 	} else {
-		proc, err := ProcessCtlService.GetProcess(data.Task.OperationTarget)
+		proc, err := ProcessCtlLogic.GetProcess(data.Task.OperationTarget)
 		if err != nil {
 			return
 		}
@@ -53,7 +53,7 @@ func (t *taskService) run(ctx context.Context, data *model.TaskJob) {
 		return
 	}
 
-	proc, err := ProcessCtlService.GetProcess(data.Task.OperationTarget)
+	proc, err := ProcessCtlLogic.GetProcess(data.Task.OperationTarget)
 	if err != nil {
 		log.Logger.Debugw("不存在该进程，结束任务")
 		return

@@ -1,4 +1,4 @@
-package service
+package logic
 
 import (
 	"errors"
@@ -13,19 +13,19 @@ import (
 	"github.com/lzh-1625/go_process_manager/utils"
 )
 
-type processCtlService struct {
+type processCtlLogic struct {
 	processMap sync.Map
 }
 
 var (
-	ProcessCtlService = new(processCtlService)
+	ProcessCtlLogic = new(processCtlLogic)
 )
 
-func (p *processCtlService) AddProcess(uuid int, process *ProcessBase) {
+func (p *processCtlLogic) AddProcess(uuid int, process *ProcessBase) {
 	p.processMap.Store(uuid, process)
 }
 
-func (p *processCtlService) KillProcess(uuid int) error {
+func (p *processCtlLogic) KillProcess(uuid int) error {
 	value, ok := p.processMap.Load(uuid)
 	if !ok {
 		return errors.New("进程不存在")
@@ -41,7 +41,7 @@ func (p *processCtlService) KillProcess(uuid int) error {
 	return result.Kill()
 }
 
-func (p *processCtlService) GetProcess(uuid int) (*ProcessBase, error) {
+func (p *processCtlLogic) GetProcess(uuid int) (*ProcessBase, error) {
 	process, ok := p.processMap.Load(uuid)
 	if !ok {
 		return nil, errors.New("进程获取失败")
@@ -54,7 +54,7 @@ func (p *processCtlService) GetProcess(uuid int) (*ProcessBase, error) {
 	return result, nil
 }
 
-func (p *processCtlService) KillAllProcess() {
+func (p *processCtlLogic) KillAllProcess() {
 	wg := sync.WaitGroup{}
 	p.processMap.Range(func(key, value any) bool {
 		process := value.(*ProcessBase)
@@ -72,7 +72,7 @@ func (p *processCtlService) KillAllProcess() {
 	wg.Wait()
 }
 
-func (p *processCtlService) KillAllProcessByUserName(userName string) {
+func (p *processCtlLogic) KillAllProcessByUserName(userName string) {
 	stopPermissionProcess := repository.PermissionRepository.GetProcessNameByPermission(userName, constants.OPERATION_STOP)
 	wg := sync.WaitGroup{}
 	p.processMap.Range(func(key, value any) bool {
@@ -90,21 +90,21 @@ func (p *processCtlService) KillAllProcessByUserName(userName string) {
 	wg.Wait()
 }
 
-func (p *processCtlService) DeleteProcess(uuid int) {
+func (p *processCtlLogic) DeleteProcess(uuid int) {
 	p.processMap.Delete(uuid)
 }
 
-func (p *processCtlService) GetProcessList() []model.ProcessInfo {
+func (p *processCtlLogic) GetProcessList() []model.ProcessInfo {
 	processConfiglist := repository.ProcessRepository.GetAllProcessConfig()
 	return p.getProcessInfoList(processConfiglist)
 }
 
-func (p *processCtlService) GetProcessListByUser(username string) []model.ProcessInfo {
+func (p *processCtlLogic) GetProcessListByUser(username string) []model.ProcessInfo {
 	processConfiglist := repository.ProcessRepository.GetProcessConfigByUser(username)
 	return p.getProcessInfoList(processConfiglist)
 }
 
-func (p *processCtlService) getProcessInfoList(processConfiglist []model.Process) []model.ProcessInfo {
+func (p *processCtlLogic) getProcessInfoList(processConfiglist []model.Process) []model.ProcessInfo {
 	processInfoList := []model.ProcessInfo{}
 	for _, v := range processConfiglist {
 		pi := model.ProcessInfo{
@@ -130,7 +130,7 @@ func (p *processCtlService) getProcessInfoList(processConfiglist []model.Process
 	return processInfoList
 }
 
-func (p *processCtlService) ProcessStartAll() {
+func (p *processCtlLogic) ProcessStartAll() {
 	p.processMap.Range(func(key, value any) bool {
 		process := value.(*ProcessBase)
 		err := process.Start()
@@ -141,7 +141,7 @@ func (p *processCtlService) ProcessStartAll() {
 	})
 }
 
-func (p *processCtlService) RunPrcessById(id int) (*ProcessBase, error) {
+func (p *processCtlLogic) RunPrcessById(id int) (*ProcessBase, error) {
 	config := repository.ProcessRepository.GetProcessConfigById(id)
 	proc, err := p.RunNewProcess(config)
 	if err != nil {
@@ -152,7 +152,7 @@ func (p *processCtlService) RunPrcessById(id int) (*ProcessBase, error) {
 	return proc, nil
 }
 
-func (p *processCtlService) ProcessInit() {
+func (p *processCtlLogic) ProcessInit() {
 	config := repository.ProcessRepository.GetAllProcessConfig()
 	for _, v := range config {
 
@@ -172,7 +172,7 @@ func (p *processCtlService) ProcessInit() {
 	}
 }
 
-func (p *processCtlService) ProcesStartAllByUsername(userName string) {
+func (p *processCtlLogic) ProcesStartAllByUsername(userName string) {
 	startPermissionProcess := repository.PermissionRepository.GetProcessNameByPermission(userName, constants.OPERATION_START)
 	p.processMap.Range(func(key, value any) bool {
 		process := value.(*ProcessBase)
@@ -187,7 +187,7 @@ func (p *processCtlService) ProcesStartAllByUsername(userName string) {
 	})
 }
 
-func (p *processCtlService) UpdateProcessConfig(config model.Process) error {
+func (p *processCtlLogic) UpdateProcessConfig(config model.Process) error {
 	process, ok := p.processMap.Load(config.Uuid)
 	if !ok {
 		return errors.New("进程获取失败")
@@ -213,7 +213,7 @@ func (p *processCtlService) UpdateProcessConfig(config model.Process) error {
 	return nil
 }
 
-func (p *processCtlService) RunNewProcess(config model.Process) (proc *ProcessBase, err error) {
+func (p *processCtlLogic) RunNewProcess(config model.Process) (proc *ProcessBase, err error) {
 	switch config.TermType {
 	case constants.TERMINAL_STD:
 		proc, err = RunNewProcessStd(config)
@@ -225,7 +225,7 @@ func (p *processCtlService) RunNewProcess(config model.Process) (proc *ProcessBa
 	return
 }
 
-func (p *processCtlService) NewProcess(config model.Process) (proc *ProcessBase, err error) {
+func (p *processCtlLogic) NewProcess(config model.Process) (proc *ProcessBase, err error) {
 	switch config.TermType {
 	case constants.TERMINAL_STD:
 		proc = NewProcessStd(config)

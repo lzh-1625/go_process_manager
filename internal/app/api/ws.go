@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/lzh-1625/go_process_manager/internal/app/constants"
+	"github.com/lzh-1625/go_process_manager/internal/app/logic"
 	"github.com/lzh-1625/go_process_manager/internal/app/middle"
-	"github.com/lzh-1625/go_process_manager/internal/app/service"
 	"github.com/lzh-1625/go_process_manager/log"
 	"github.com/lzh-1625/go_process_manager/utils"
 
@@ -42,7 +42,7 @@ var upgrader = websocket.Upgrader{
 func (w *wsApi) WebsocketHandle(ctx *gin.Context) {
 	reqUser := getUserName(ctx)
 	uuid := getQueryInt(ctx, "uuid")
-	proc, err := service.ProcessCtlService.GetProcess(uuid)
+	proc, err := logic.ProcessCtlLogic.GetProcess(uuid)
 	errCheck(ctx, err != nil, "Operation failed!")
 	errCheck(ctx, proc.HasWsConn(reqUser), "A connection already exists; unable to establish a new one!")
 	errCheck(ctx, proc.State.State != 1, "The process is currently running.")
@@ -83,7 +83,7 @@ func (w *wsApi) WebsocketHandle(ctx *gin.Context) {
 	conn.Close()
 }
 
-func (w *wsApi) startWsConnect(conn *websocket.Conn, proc service.Process, write bool) {
+func (w *wsApi) startWsConnect(conn *websocket.Conn, proc logic.Process, write bool) {
 	log.Logger.Debugw("ws读取线程已启动")
 	go func() {
 		for {

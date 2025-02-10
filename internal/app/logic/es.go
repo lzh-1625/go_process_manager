@@ -1,4 +1,4 @@
-package service
+package logic
 
 import (
 	"context"
@@ -13,22 +13,22 @@ import (
 	"github.com/olivere/elastic/v7"
 )
 
-type esService struct {
+type esLogic struct {
 	esClient *elastic.Client
 }
 
 var (
-	EsService = new(esService)
+	EsLogic = new(esLogic)
 )
 
-func (e *esService) InitEs() bool {
+func (e *esLogic) InitEs() bool {
 	if !config.CF.EsEnable {
 		log.Logger.Debug("不使用es")
 		return false
 	}
 
 	var err error
-	EsService.esClient, err = elastic.NewClient(
+	EsLogic.esClient, err = elastic.NewClient(
 		elastic.SetURL(config.CF.EsUrl),
 		elastic.SetBasicAuth(config.CF.EsUsername, config.CF.EsPassword),
 		elastic.SetSniff(false),
@@ -38,11 +38,11 @@ func (e *esService) InitEs() bool {
 		log.Logger.Warnw("Failed to connect to es", "err", err)
 		return false
 	}
-	EsService.CreateIndexIfNotExists(config.CF.EsIndex)
+	EsLogic.CreateIndexIfNotExists(config.CF.EsIndex)
 	return true
 }
 
-func (e *esService) Insert(logContent string, processName string, using string, ts int64) {
+func (e *esLogic) Insert(logContent string, processName string, using string, ts int64) {
 	data := model.ProcessLog{
 		Log:   logContent,
 		Name:  processName,
@@ -55,7 +55,7 @@ func (e *esService) Insert(logContent string, processName string, using string, 
 	}
 }
 
-func (e *esService) CreateIndexIfNotExists(index string) error {
+func (e *esLogic) CreateIndexIfNotExists(index string) error {
 
 	ctx := context.Background()
 	exists, err := e.esClient.IndexExists(index).Do(ctx)
@@ -76,7 +76,7 @@ func (e *esService) CreateIndexIfNotExists(index string) error {
 	return nil
 }
 
-func (e *esService) Search(req model.GetLogReq, filterProcessName ...string) model.LogResp {
+func (e *esLogic) Search(req model.GetLogReq, filterProcessName ...string) model.LogResp {
 	// 检查 req 是否为 nil
 	if req.Page.From < 0 || req.Page.Size <= 0 {
 		log.Logger.Error("无效的分页请求参数")
@@ -144,7 +144,7 @@ func (e *esService) Search(req model.GetLogReq, filterProcessName ...string) mod
 }
 
 // 通过反射得到mapping
-func (e *esService) structToJSON() string {
+func (e *esLogic) structToJSON() string {
 	typ := reflect.TypeOf(model.ProcessLog{})
 	properties := make(map[string]map[string]string)
 	for i := 0; i < typ.NumField(); i++ {

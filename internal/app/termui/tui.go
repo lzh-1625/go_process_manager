@@ -7,7 +7,7 @@ import (
 
 	"github.com/lzh-1625/go_process_manager/config"
 	"github.com/lzh-1625/go_process_manager/internal/app/constants"
-	"github.com/lzh-1625/go_process_manager/internal/app/service"
+	"github.com/lzh-1625/go_process_manager/internal/app/logic"
 	"github.com/lzh-1625/go_process_manager/log"
 	"github.com/lzh-1625/go_process_manager/utils"
 
@@ -44,7 +44,7 @@ func (t *tui) TermuiInit() {
 func (t *tui) drawProcessList() {
 	t.app = tview.NewApplication()
 	list := tview.NewList()
-	for i, v := range service.ProcessCtlService.GetProcessList() {
+	for i, v := range logic.ProcessCtlLogic.GetProcessList() {
 		if i >= 'r' {
 			i++
 		}
@@ -67,7 +67,7 @@ func (t *tui) drawProcessList() {
 }
 
 func (t *tui) teminal(uuid int) {
-	p, err := service.ProcessCtlService.GetProcess(uuid)
+	p, err := logic.ProcessCtlLogic.GetProcess(uuid)
 	if err != nil {
 		log.Logger.Error("不存在uuid", "uuid", uuid)
 	}
@@ -89,7 +89,7 @@ func (t *tui) teminal(uuid int) {
 	log.Logger.Info("tui quit")
 }
 
-func (t *tui) startConnect(p service.Process, ctx context.Context, cancel context.CancelFunc) {
+func (t *tui) startConnect(p logic.Process, ctx context.Context, cancel context.CancelFunc) {
 	switch p.Type() {
 	case constants.TERMINAL_PTY:
 		{
@@ -102,7 +102,7 @@ func (t *tui) startConnect(p service.Process, ctx context.Context, cancel contex
 	}
 }
 
-func (t *tui) ptyConnect(p service.Process, ctx context.Context, cancel context.CancelFunc) {
+func (t *tui) ptyConnect(p logic.Process, ctx context.Context, cancel context.CancelFunc) {
 	buf := make([]byte, 1024)
 	for {
 		select {
@@ -124,7 +124,7 @@ func (t *tui) ptyConnect(p service.Process, ctx context.Context, cancel context.
 	}
 }
 
-func (t *tui) stdConnect(p service.Process, ctx context.Context, cancel context.CancelFunc) {
+func (t *tui) stdConnect(p logic.Process, ctx context.Context, cancel context.CancelFunc) {
 	buf := make([]byte, 1024)
 	var line string
 	for {

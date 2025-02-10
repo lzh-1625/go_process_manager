@@ -1,4 +1,4 @@
-package service
+package logic
 
 import (
 	"github.com/lzh-1625/go_process_manager/config"
@@ -6,18 +6,18 @@ import (
 	"github.com/lzh-1625/go_process_manager/internal/app/repository"
 )
 
-type LogService interface {
+type LogLogic interface {
 	Search(req model.GetLogReq, filterProcessName ...string) model.LogResp
 	Insert(log string, processName string, using string, ts int64)
 }
 
-var LogServiceImpl LogService
+var LogLogicImpl LogLogic
 
 func InitLog() {
 	if config.CF.EsEnable {
-		LogServiceImpl = LogEs
+		LogLogicImpl = LogEs
 	} else {
-		LogServiceImpl = LogSqlite
+		LogLogicImpl = LogSqlite
 	}
 }
 
@@ -48,9 +48,9 @@ type logEs struct{}
 var LogEs = new(logEs)
 
 func (l *logEs) Search(req model.GetLogReq, filterProcessName ...string) model.LogResp {
-	return EsService.Search(req, filterProcessName...)
+	return EsLogic.Search(req, filterProcessName...)
 }
 
 func (l *logEs) Insert(log string, processName string, using string, ts int64) {
-	EsService.Insert(log, processName, using, ts)
+	EsLogic.Insert(log, processName, using, ts)
 }

@@ -1,4 +1,4 @@
-package service
+package logic
 
 import (
 	"reflect"
@@ -9,13 +9,13 @@ import (
 	"github.com/lzh-1625/go_process_manager/internal/app/repository"
 )
 
-type configService struct{}
+type configLogic struct{}
 
 var (
-	ConfigService = new(configService)
+	ConfigLogic = new(configLogic)
 )
 
-func (c *configService) GetSystemConfiguration() []model.SystemConfigurationVo {
+func (c *configLogic) GetSystemConfiguration() []model.SystemConfigurationVo {
 	result := []model.SystemConfigurationVo{}
 	typeElem := reflect.TypeOf(config.CF).Elem()
 	valueElem := reflect.ValueOf(config.CF).Elem()
@@ -49,7 +49,7 @@ func (c *configService) GetSystemConfiguration() []model.SystemConfigurationVo {
 	return result
 }
 
-func (c *configService) SetSystemConfiguration(kv map[string]string) error {
+func (c *configLogic) SetSystemConfiguration(kv map[string]string) error {
 	typeElem := reflect.TypeOf(config.CF).Elem()
 	valueElem := reflect.ValueOf(config.CF).Elem()
 	for i := 0; i < typeElem.NumField(); i++ {
@@ -96,7 +96,7 @@ func (c *configService) SetSystemConfiguration(kv map[string]string) error {
 }
 
 // reset system config to default
-func (c *configService) ResetSystemConfiguration() error {
+func (c *configLogic) ResetSystemConfiguration() error {
 	typeElem := reflect.TypeOf(config.CF).Elem()
 	valueElem := reflect.ValueOf(config.CF).Elem()
 	for i := 0; i < typeElem.NumField(); i++ {

@@ -1,4 +1,4 @@
-package service
+package logic
 
 import (
 	"time"
@@ -26,7 +26,7 @@ func InitLogHandle() {
 
 func (l *loghandler) AddLog(data model.ProcessLog) {
 	if err := l.antsPool.Submit(func() {
-		LogServiceImpl.Insert(data.Log, data.Name, data.Using, data.Time)
+		LogLogicImpl.Insert(data.Log, data.Name, data.Using, data.Time)
 	}); err != nil {
 		log.Logger.Warnw("协程池添加任务失败", "err", err, "当前运行数量", l.antsPool.Running())
 	}

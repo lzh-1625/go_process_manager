@@ -10,9 +10,9 @@ import (
 
 	"github.com/lzh-1625/go_process_manager/config"
 	"github.com/lzh-1625/go_process_manager/internal/app/constants"
+	"github.com/lzh-1625/go_process_manager/internal/app/logic"
 	"github.com/lzh-1625/go_process_manager/internal/app/middle"
 	"github.com/lzh-1625/go_process_manager/internal/app/repository"
-	"github.com/lzh-1625/go_process_manager/internal/app/service"
 	"github.com/lzh-1625/go_process_manager/internal/app/termui"
 	logger "github.com/lzh-1625/go_process_manager/log"
 	"github.com/lzh-1625/go_process_manager/utils"
@@ -83,11 +83,11 @@ func initLog() {
 }
 
 func initEs() {
-	service.EsService.InitEs()
+	logic.EsLogic.InitEs()
 }
 
 func initProcess() {
-	service.ProcessCtlService.ProcessInit()
+	logic.ProcessCtlLogic.ProcessInit()
 }
 
 func initJwtSecret() {
@@ -101,7 +101,7 @@ func initJwtSecret() {
 }
 
 func initLogHanler() {
-	service.InitLog()
+	logic.InitLog()
 }
 
 func initTui() {
@@ -109,12 +109,12 @@ func initTui() {
 }
 
 func InitTask() {
-	service.TaskService.InitTaskJob()
+	logic.TaskLogic.InitTaskJob()
 }
 
 func initResetConfig() {
 	if len(os.Args) >= 2 && os.Args[1] == "reset" {
-		err := service.ConfigService.ResetSystemConfiguration()
+		err := logic.ConfigLogic.ResetSystemConfiguration()
 		if err != nil {
 			log.Panic(err)
 		}
@@ -128,7 +128,7 @@ func initListenKillSignal() {
 		sigs := make(chan os.Signal, 1)
 		signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 		<-sigs
-		service.ProcessCtlService.KillAllProcess()
+		logic.ProcessCtlLogic.KillAllProcess()
 		log.Print("已停止所有进程")
 		os.Exit(0)
 	}()
@@ -139,5 +139,5 @@ func initCondTiming() {
 }
 
 func initLogHandle() {
-	service.InitLogHandle()
+	logic.InitLogHandle()
 }

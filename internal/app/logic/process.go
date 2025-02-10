@@ -1,4 +1,4 @@
-package service
+package logic
 
 import (
 	"fmt"
@@ -151,7 +151,7 @@ func (p *ProcessBase) SetState(state constants.ProcessState, fn ...func() bool) 
 	}
 	p.State.State = state
 	middle.ProcessWaitCond.Trigger()
-	go TaskService.RunTaskByTriggerEvent(p.Name, state)
+	go TaskLogic.RunTaskByTriggerEvent(p.Name, state)
 	return true
 }
 
@@ -237,7 +237,7 @@ func (p *ProcessBase) push(message string) {
 			"{$message}": message,
 			"{$status}":  strconv.Itoa(int(p.State.State)),
 		}
-		PushService.Push(p.Config.PushIds, messagePlaceholders)
+		PushLogic.Push(p.Config.PushIds, messagePlaceholders)
 	}
 }
 

@@ -6,8 +6,8 @@ import (
 
 	_ "github.com/lzh-1625/go_process_manager/boot"
 	"github.com/lzh-1625/go_process_manager/internal/app/constants"
+	"github.com/lzh-1625/go_process_manager/internal/app/logic"
 	"github.com/lzh-1625/go_process_manager/internal/app/model"
-	"github.com/lzh-1625/go_process_manager/internal/app/service"
 
 	"github.com/containerd/cgroups/v3/cgroup1"
 	"github.com/opencontainers/runtime-spec/specs-go"
@@ -28,7 +28,7 @@ func TestCgroup(t *testing.T) {
 		panic(err)
 	}
 	defer control.Delete()
-	p, err := service.ProcessCtlService.RunNewProcess(model.Process{
+	p, err := logic.ProcessCtlLogic.RunNewProcess(model.Process{
 		Name:     "test",
 		Cmd:      "bash",
 		Cwd:      `/root`,

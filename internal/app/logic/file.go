@@ -1,4 +1,4 @@
-package service
+package logic
 
 import (
 	"fmt"
@@ -10,11 +10,11 @@ import (
 	"github.com/lzh-1625/go_process_manager/log"
 )
 
-type fileService struct{}
+type fileLogic struct{}
 
-var FileService = new(fileService)
+var FileLogic = new(fileLogic)
 
-func (f *fileService) ReadFileFromPath(path string) (result []byte, err error) {
+func (f *fileLogic) ReadFileFromPath(path string) (result []byte, err error) {
 	fi, err := os.Open(path)
 	if err != nil {
 		return
@@ -36,7 +36,7 @@ func (f *fileService) ReadFileFromPath(path string) (result []byte, err error) {
 	return
 }
 
-func (f *fileService) UpdateFileData(filePath string, file io.Reader, size int64) error {
+func (f *fileLogic) UpdateFileData(filePath string, file io.Reader, size int64) error {
 	if size := float64(size) / 1e6; size > config.CF.FileSizeLimit {
 		return fmt.Errorf("写入数据大小%vMB,超过%vMB限制", size, config.CF.FileSizeLimit)
 	}
@@ -52,7 +52,7 @@ func (f *fileService) UpdateFileData(filePath string, file io.Reader, size int64
 	return nil
 }
 
-func (f *fileService) GetFileAndDirByPath(srcPath string) []model.FileStruct {
+func (f *fileLogic) GetFileAndDirByPath(srcPath string) []model.FileStruct {
 	result := []model.FileStruct{}
 	files, err := os.ReadDir(srcPath)
 	if err != nil {
@@ -67,11 +67,11 @@ func (f *fileService) GetFileAndDirByPath(srcPath string) []model.FileStruct {
 	return result
 }
 
-func (f *fileService) CreateNewDir(path string, name string) error {
+func (f *fileLogic) CreateNewDir(path string, name string) error {
 	_, err := os.Create(path + name)
 	return err
 }
 
-func (f *fileService) CreateNewFile(path string, name string) error {
+func (f *fileLogic) CreateNewFile(path string, name string) error {
 	return os.MkdirAll(path+name, os.ModeDir)
 }

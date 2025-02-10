@@ -1,4 +1,4 @@
-package service
+package logic
 
 import (
 	"net/http"
@@ -9,11 +9,11 @@ import (
 	"github.com/levigross/grequests"
 )
 
-type pushService struct{}
+type pushLogic struct{}
 
-var PushService = new(pushService)
+var PushLogic = new(pushLogic)
 
-func (p *pushService)  Push(ids []int, placeholders map[string]string) {
+func (p *pushLogic) Push(ids []int, placeholders map[string]string) {
 	pl := repository.PushRepository.GetPushConfigByIds(ids)
 	for _, v := range pl {
 		if v.Enable {
@@ -29,7 +29,7 @@ func (p *pushService)  Push(ids []int, placeholders map[string]string) {
 	}
 }
 
-func (p *pushService) getReplaceMessage(placeholders map[string]string, message string) string {
+func (p *pushLogic) getReplaceMessage(placeholders map[string]string, message string) string {
 	for k, v := range placeholders {
 		message = strings.ReplaceAll(message, k, v)
 	}
