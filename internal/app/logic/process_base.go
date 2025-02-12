@@ -128,11 +128,11 @@ func (p *ProcessBase) pInit() {
 	p.State.manualStopFlag = false
 	p.State.startTime = time.Now()
 	p.ws = make(map[string]ConnectInstance)
+	p.Pid = p.p.Pid
 	p.doOnInit()
 	p.InitPerformanceStatus()
 	p.initPsutil()
 	p.initCgroup()
-	p.Pid = p.p.Pid
 	go p.watchDog()
 	go p.readInit()
 	go p.monitorHanler()
