@@ -13,11 +13,10 @@ import (
 )
 
 func (t *taskLogic) RunTaskById(id int) error {
-	v, ok := t.taskJobMap.Load(id)
-	if !ok {
-		return errors.New("don't exist task id")
+	task, err := t.getTaskJob(id)
+	if err != nil {
+		return errors.New("id不存在")
 	}
-	task := v.(*model.TaskJob)
 	if task.Running {
 		return errors.New("task is running")
 	}
@@ -68,9 +67,8 @@ func (t *taskLogic) run(ctx context.Context, data *model.TaskJob) {
 	log.Logger.Infow("任务执行成功", "target", data.Task.OperationTarget)
 
 	if data.Task.NextId != nil {
-		v, ok := t.taskJobMap.Load(*data.Task.NextId)
-		nextTask := v.(*model.TaskJob)
-		if !ok {
+		nextTask, err := t.getTaskJob(*data.Task.NextId)
+		if err != nil {
 			log.Logger.Errorw("无法获取到下一个节点,结束任务", "nextId", data.Task.NextId)
 			return
 		}
