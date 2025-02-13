@@ -20,6 +20,7 @@ type configuration struct {
 	ProcessExpireTime         int64   `default:"60" describe:"进程控制权过期时间（秒）"`
 	PerformanceInfoListLength int     `default:"30" describe:"性能信息存储长度"`
 	PerformanceInfoInterval   int     `default:"60" describe:"监控获取间隔时间（秒）"`
+	TerminalConnectTimeout    int     `default:"10" describe:"终端连接超时时间（分钟）"`
 	UserPassWordMinLength     int     `default:"4" describe:"用户密码最小长度"`
 	LogMinLenth               int     `default:"0" describe:"过滤日志最小长度"`
 	LogHandlerPoolSize        int     `default:"10" describe:"日志处理并行数"`

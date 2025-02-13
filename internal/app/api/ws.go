@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/lzh-1625/go_process_manager/config"
 	"github.com/lzh-1625/go_process_manager/internal/app/constants"
 	"github.com/lzh-1625/go_process_manager/internal/app/logic"
 	"github.com/lzh-1625/go_process_manager/internal/app/middle"
@@ -75,7 +76,7 @@ func (w *wsApi) WebsocketHandle(ctx *gin.Context) {
 	select {
 	case <-proc.StopChan:
 		log.Logger.Infow("ws连接断开", "操作类型", "进程已停止，强制断开ws连接")
-	case <-time.After(time.Minute * 10):
+	case <-time.After(time.Minute * time.Duration(config.CF.TerminalConnectTimeout)):
 		log.Logger.Infow("ws连接断开", "操作类型", "连接时间超过最大时长限制")
 	case <-wsCtx.Done():
 		log.Logger.Infow("ws连接断开", "操作类型", "tcp连接建立已被关闭")
