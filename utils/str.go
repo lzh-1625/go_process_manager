@@ -83,3 +83,11 @@ func JsonStrToStruct[T any](str string) T {
 	json.Unmarshal([]byte(str), &data)
 	return data
 }
+
+func StructToJsonStr[T any](data T) string {
+	jsonStr, err := json.Marshal(data)
+	if err != nil {
+		return ""
+	}
+	return string(jsonStr)
+}

@@ -16,7 +16,7 @@ func (p *procApi) CreateNewProcess(ctx *gin.Context, req model.Process) {
 	index, err := repository.ProcessRepository.AddProcessConfig(req)
 	errCheck(ctx, err != nil, err)
 	req.Uuid = index
-	proc, err := logic.ProcessCtlLogic.RunNewProcess(req)
+	proc, err := logic.ProcessCtlLogic.NewProcess(req)
 	errCheck(ctx, err != nil, err)
 	logic.ProcessCtlLogic.AddProcess(req.Uuid, proc)
 	rOk(ctx, "Operation successful!", gin.H{

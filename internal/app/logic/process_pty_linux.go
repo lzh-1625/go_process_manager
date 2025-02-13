@@ -145,11 +145,3 @@ func NewProcessPty(pconfig model.Process) *ProcessBase {
 	processPty.setProcessConfig(pconfig)
 	return &p
 }
-
-func RunNewProcessPty(pconfig model.Process) (*ProcessBase, error) {
-	processPty := NewProcessPty(pconfig)
-	if err := processPty.Start(); err != nil {
-		return nil, err
-	}
-	return processPty, nil
-}

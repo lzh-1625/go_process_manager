@@ -207,22 +207,10 @@ func (p *processCtlLogic) UpdateProcessConfig(config model.Process) error {
 	result.Config.cpuLimit = config.CpuLimit
 	result.Config.AutoRestart = config.AutoRestart
 	result.Config.compulsoryRestart = config.CompulsoryRestart
-	result.StartCommand = strings.Split(config.Cmd, " ")
+	result.StartCommand = strings.Fields(config.Cmd)
 	result.WorkDir = config.Cwd
 	result.Name = config.Name
 	return nil
-}
-
-func (p *processCtlLogic) RunNewProcess(config model.Process) (proc *ProcessBase, err error) {
-	switch config.TermType {
-	case constants.TERMINAL_STD:
-		proc, err = RunNewProcessStd(config)
-	case constants.TERMINAL_PTY:
-		proc, err = RunNewProcessPty(config)
-	default:
-		err = errors.New("终端类型错误")
-	}
-	return
 }
 
 func (p *processCtlLogic) NewProcess(config model.Process) (proc *ProcessBase, err error) {
@@ -234,5 +222,14 @@ func (p *processCtlLogic) NewProcess(config model.Process) (proc *ProcessBase, e
 	default:
 		err = errors.New("终端类型错误")
 	}
+	return
+}
+
+func (p *processCtlLogic) RunNewProcess(config model.Process) (proc *ProcessBase, err error) {
+	proc, err = p.NewProcess(config)
+	if err != nil {
+		return
+	}
+	err = proc.Start()
 	return
 }

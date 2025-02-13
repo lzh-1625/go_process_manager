@@ -145,11 +145,3 @@ func NewProcessStd(pconfig model.Process) *ProcessBase {
 	processStd.setProcessConfig(pconfig)
 	return &p
 }
-
-func RunNewProcessStd(pconfig model.Process) (*ProcessBase, error) {
-	processStd := NewProcessStd(pconfig)
-	if err := processStd.Start(); err != nil {
-		return nil, err
-	}
-	return processStd, nil
-}
