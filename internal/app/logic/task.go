@@ -141,6 +141,7 @@ var OperationHandle = map[constants.TaskOperation]operationFunc{
 			return false
 		}
 		log.Logger.Debugw("异步停止任务")
+		proc.State.manualStopFlag = true
 		go proc.Kill()
 		return true
 	},
@@ -151,6 +152,7 @@ var OperationHandle = map[constants.TaskOperation]operationFunc{
 			return false
 		}
 		log.Logger.Debugw("停止任务并等待结束")
+		proc.State.manualStopFlag = true
 		return proc.Kill() == nil
 	},
 }

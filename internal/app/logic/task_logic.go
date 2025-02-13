@@ -133,17 +133,31 @@ func (t *taskLogic) CreateTask(data model.Task) error {
 }
 
 func (t *taskLogic) EditTask(data model.Task) error {
-	if data.Cron != nil {
-		if _, err := cron.ParseStandard(*data.Cron); err != nil {
-			return err
-		}
-	}
 	v, ok := t.taskJobMap.Load(data.Id)
 	if !ok {
 		return errors.New("don't exist this task id")
 	}
 	tj := v.(*model.TaskJob)
+	if tj.Running {
+		return errors.New("can't edit when task is running")
+	}
+	tj.Cron.Stop()
 	tj.Task = &data
+	if tj.Task.Cron != nil {
+		if _, err := cron.ParseStandard(*tj.Task.Cron); err != nil {
+			return err
+		}
+		c := cron.New()
+		_, err := c.AddFunc(*data.Cron, t.cronHandle(tj))
+		if err != nil {
+			log.Logger.Errorw("定时任务创建失败", "err", err, "id", data.Id)
+			return err
+		}
+		if data.Enable {
+			c.Start()
+		}
+		tj.Cron = c
+	}
 	return repository.TaskRepository.EditTask(data)
 }
 
