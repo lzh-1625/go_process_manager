@@ -9,7 +9,7 @@ func Unwarp[T any](result T, err error) T {
 	return result
 }
 
-func UnwarpIgnore[T any](result T, _ error) T {
+func UnwarpIgnore[T any](result T, _ any) T {
 	return result
 }
 

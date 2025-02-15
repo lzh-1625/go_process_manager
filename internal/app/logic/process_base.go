@@ -136,7 +136,6 @@ func (p *ProcessBase) pInit() {
 	go p.watchDog()
 	go p.readInit()
 	go p.monitorHanler()
-	middle.ProcessWaitCond.Trigger()
 }
 
 // fn 函数执行成功的情况下对state赋值
