@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"sync"
 	"time"
 
 	"github.com/lzh-1625/go_process_manager/config"
@@ -21,14 +22,19 @@ var WsApi = new(wsApi)
 
 type WsConnetInstance struct {
 	WsConnect  *websocket.Conn
+	wsLock     sync.Mutex
 	CancelFunc context.CancelFunc
 }
 
 func (w *WsConnetInstance) Write(b []byte) {
+	w.wsLock.Lock()
+	defer w.wsLock.Unlock()
 	w.WsConnect.WriteMessage(websocket.BinaryMessage, b)
 }
 
 func (w *WsConnetInstance) WriteString(s string) {
+	w.wsLock.Lock()
+	defer w.wsLock.Unlock()
 	w.WsConnect.WriteMessage(websocket.TextMessage, []byte(s))
 }
 func (w *WsConnetInstance) Cancel() {
@@ -62,10 +68,12 @@ func (w *wsApi) WebsocketHandle(ctx *gin.Context) {
 	wci := &WsConnetInstance{
 		WsConnect:  conn,
 		CancelFunc: cancel,
+		wsLock:     sync.Mutex{},
 	}
 	proc.ReadCache(wci)
-	w.startWsConnect(conn, cancel, proc, hasOprPermission(ctx, uuid, constants.OPERATION_TERMINAL_WRITE))
+	w.startWsConnect(wci, cancel, proc, hasOprPermission(ctx, uuid, constants.OPERATION_TERMINAL_WRITE))
 	proc.AddConn(reqUser, wci)
+	defer middle.ProcessWaitCond.Trigger()
 	defer proc.DeleteConn(reqUser)
 	conn.SetCloseHandler(func(_ int, _ string) error {
 		middle.ProcessWaitCond.Trigger()
@@ -84,20 +92,43 @@ func (w *wsApi) WebsocketHandle(ctx *gin.Context) {
 	conn.Close()
 }
 
-func (w *wsApi) startWsConnect(conn *websocket.Conn, cancel context.CancelFunc, proc logic.Process, write bool) {
+func (w *wsApi) startWsConnect(wci *WsConnetInstance, cancel context.CancelFunc, proc logic.Process, write bool) {
 	log.Logger.Debugw("ws读取线程已启动")
 	go func() {
 		for {
-			_, b, err := conn.ReadMessage()
+			_, b, err := wci.WsConnect.ReadMessage()
 			if err != nil {
 				log.Logger.Debugw("ws读取线程已退出", "info", err)
-				cancel()
 				return
 			}
 			if write {
 				proc.WriteBytes(b)
-				continue
 			}
 		}
 	}()
+
+	// proactive health check
+	pongChan := make(chan struct{})
+	wci.WsConnect.SetPongHandler(func(appData string) error {
+		pongChan <- struct{}{}
+		return nil
+	})
+	timer := time.NewTicker(time.Second * time.Duration(config.CF.WsHealthCheckInterval))
+	go func() {
+		defer timer.Stop()
+		for {
+			wci.wsLock.Lock()
+			wci.WsConnect.WriteMessage(websocket.PingMessage, nil)
+			wci.wsLock.Unlock()
+			select {
+			case <-pongChan:
+				timer.Reset(time.Second * time.Duration(config.CF.WsHealthCheckInterval))
+			case <-timer.C:
+				log.Logger.Debugw("pong报文超时,结束ws连接")
+				cancel()
+				return
+			}
+		}
+	}()
+
 }
