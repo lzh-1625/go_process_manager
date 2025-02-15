@@ -91,6 +91,7 @@ func (w *wsApi) startWsConnect(conn *websocket.Conn, proc logic.Process, write b
 			_, b, err := conn.ReadMessage()
 			if err != nil {
 				log.Logger.Debugw("ws读取线程已退出", "info", err)
+				conn.Close()
 				return
 			}
 			if write {
@@ -99,4 +100,22 @@ func (w *wsApi) startWsConnect(conn *websocket.Conn, proc logic.Process, write b
 			}
 		}
 	}()
+	// // health check
+	// pongChan := make(chan struct{})
+	// conn.SetPongHandler(func(appData string) error {
+	// 	pongChan <- struct{}{}
+	// 	return nil
+	// })
+	// timer := time.NewTicker(time.Second)
+	// go func() {
+	// 	for {
+	// 		conn.WriteMessage(websocket.PingMessage, nil)
+	// 		select {
+	// 		case <-pongChan:
+	// 			timer.Reset(time.Second)
+	// 		case <-timer.C:
+	// 			conn.Close()
+	// 		}
+	// 	}
+	// }()
 }
