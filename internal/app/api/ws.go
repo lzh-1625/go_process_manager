@@ -100,31 +100,4 @@ func (w *wsApi) startWsConnect(conn *websocket.Conn, cancel context.CancelFunc, 
 			}
 		}
 	}()
-	if config.CF.WsProactiveHealthCheck {
-		w.proactiveHealthCheck(conn, cancel)
-	}
-}
-
-func (w *wsApi) proactiveHealthCheck(conn *websocket.Conn, cancel context.CancelFunc) {
-	pongChan := make(chan struct{})
-	conn.SetPongHandler(func(appData string) error {
-		pongChan <- struct{}{}
-		return nil
-	})
-	timer := time.NewTimer(time.Second)
-	go func() {
-		defer timer.Stop()
-		for {
-			conn.WriteMessage(websocket.PingMessage, nil)
-			select {
-			case <-pongChan:
-				timer.Reset(time.Second)
-			case <-timer.C:
-				log.Logger.Debugw("pong报文超时,结束ws连接")
-				cancel()
-				return
-			}
-			time.Sleep(time.Second * 3)
-		}
-	}()
 }

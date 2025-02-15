@@ -28,7 +28,6 @@ type configuration struct {
 	KillWaitTime              int     `default:"5" describe:"kill信号等待时间（秒）"`
 	TaskTimeout               int     `default:"60" describe:"任务执行超时时间（秒）"`
 	TokenExpirationTime       int64   `default:"720" describe:"token过期时间（小时）"`
-	WsProactiveHealthCheck    bool    `default:"false" describe:"ws主动健康检查"`
 	CgroupPeriod              int64   `default:"100000" describe:"CgroupPeriod"`
 	CgroupSwapLimit           bool    `default:"false" describe:"cgroup swap限制"`
 	CondWaitTime              int     `default:"30" describe:"长轮询等待时间（秒）"`
