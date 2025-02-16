@@ -113,7 +113,7 @@ func (w *wsApi) startWsConnect(wci *WsConnetInstance, cancel context.CancelFunc,
 		pongChan <- struct{}{}
 		return nil
 	})
-	timer := time.NewTicker(time.Second * time.Duration(config.CF.WsHealthCheckInterval))
+	timer := time.NewTicker(time.Second)
 	go func() {
 		defer timer.Stop()
 		for {
@@ -121,13 +121,13 @@ func (w *wsApi) startWsConnect(wci *WsConnetInstance, cancel context.CancelFunc,
 			wci.WsConnect.WriteMessage(websocket.PingMessage, nil)
 			wci.wsLock.Unlock()
 			select {
-			case <-pongChan:
-				timer.Reset(time.Second * time.Duration(config.CF.WsHealthCheckInterval))
 			case <-timer.C:
-				log.Logger.Debugw("pong报文超时,结束ws连接")
 				cancel()
 				return
+			case <-pongChan:
 			}
+			time.Sleep(time.Second * time.Duration(config.CF.WsHealthCheckInterval))
+			timer.Reset(time.Second)
 		}
 	}()
 
