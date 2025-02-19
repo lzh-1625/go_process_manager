@@ -45,7 +45,7 @@ func (t *taskRepository) EditTask(data model.Task) (err error) {
 		return err
 	}
 
-	err = db.Model(&model.Task{}).Where(&model.Task{Id: data.Id}).Updates(data).Error
+	err = db.Model(&model.Task{}).Where(&model.Task{Id: data.Id}).Save(data).Error
 	return
 }
 
