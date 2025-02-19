@@ -17,6 +17,7 @@ func DemoMiddle() func(c *gin.Context) {
 		if ctx.Request.Method == http.MethodGet || slices.Contains(whiteListUri, ctx.Request.URL.String()) {
 			ctx.Next()
 		} else {
+			rErr(ctx, -1, "当前处于演示模式", nil)
 			ctx.Abort()
 		}
 	}
