@@ -111,7 +111,8 @@ var OperationHandle = map[constants.TaskOperation]operationFunc{
 			log.Logger.Debugw("进程已在运行")
 			return false
 		}
-		return proc.Start() == nil
+		go proc.Start()
+		return true
 	},
 
 	constants.TASK_START_WAIT_DONE: func(data *model.Task, proc *ProcessBase) bool {
