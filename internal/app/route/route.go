@@ -54,6 +54,7 @@ func routePathInit(r *gin.Engine) {
 	apiGroup := r.Group("/api")
 	apiGroup.Use(middle.CheckToken())
 	apiGroup.Use(middle.PanicMiddle())
+	// apiGroup.Use(middle.DemoMiddle())
 	{
 		apiGroup.GET("/ws", middle.OprPermission(constants.OPERATION_TERMINAL), api.WsApi.WebsocketHandle)
 
