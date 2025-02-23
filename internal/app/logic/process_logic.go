@@ -121,7 +121,7 @@ func (p *processCtlLogic) getProcessInfoList(processConfiglist []model.Process) 
 			pi.Usage.Mem = process.performanceStatus.mem
 			pi.Usage.Time = process.performanceStatus.time
 			pi.TermType = process.Type()
-			pi.CgroupEnable = process.cgroup.enable
+			pi.CgroupEnable = process.Config.cgroupEnable
 			pi.CpuLimit = process.Config.cpuLimit
 			pi.MemoryLimit = process.Config.memoryLimit
 		}
