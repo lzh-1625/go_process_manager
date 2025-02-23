@@ -59,8 +59,8 @@ func (p *waitCond) WaitGetMiddel(c *gin.Context) {
 }
 
 func (p *waitCond) WaitTriggerMiddel(c *gin.Context) {
+	defer p.Trigger()
 	c.Next()
-	p.Trigger()
 }
 
 func (p *waitCond) timing() { // 添加定时信号清理阻塞协程

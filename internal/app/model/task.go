@@ -18,7 +18,7 @@ type Task struct {
 	TriggerEvent    *constants.ProcessState `gorm:"column:trigger_event;" json:"triggerEvent" `
 	TriggerTarget   *int                    `gorm:"column:trigger_target;" json:"triggerTarget" `
 	OperationTarget int                     `gorm:"column:operation_target;NOT NULL" json:"operationTarget" `
-	Cron            *string                 `gorm:"column:cron;" json:"cron" `
+	Cron            string                  `gorm:"column:cron;" json:"cron" `
 	Enable          bool                    `gorm:"column:enable;" json:"enable" `
 	ApiEnable       bool                    `gorm:"column:api_enable;" json:"apiEnable" `
 	Key             *string                 `gorm:"column:key;" json:"key" `

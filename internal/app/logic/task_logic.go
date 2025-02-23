@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 	"errors"
+	"fmt"
 	"sync"
 	"time"
 
@@ -35,9 +36,9 @@ func (t *taskLogic) InitTaskJob() {
 			Task:      &v,
 			StartTime: time.Now(),
 		}
-		if tj.Task.Cron != nil {
+		if tj.Task.Cron != "" {
 			c := cron.New()
-			_, err := c.AddFunc(*v.Cron, t.cronHandle(tj))
+			_, err := c.AddFunc(v.Cron, t.cronHandle(tj))
 			if err != nil {
 				log.Logger.Errorw("定时任务创建失败", "err", err, "id", v.Id)
 				continue
@@ -118,13 +119,13 @@ func (t *taskLogic) CreateTask(data model.Task) error {
 		Task:      &data,
 		StartTime: time.Now(),
 	}
-	if data.Cron != nil {
-		if _, err := cron.ParseStandard(*data.Cron); err != nil { // cron表达式校验
-			log.Logger.Errorw("cron解析失败", "cron", *data.Cron, "err", err)
+	if data.Cron != "" {
+		if _, err := cron.ParseStandard(data.Cron); err != nil { // cron表达式校验
+			log.Logger.Errorw("cron解析失败", "cron", data.Cron, "err", err)
 			return err
 		} else {
 			c := cron.New()
-			c.AddFunc(*data.Cron, t.cronHandle(tj))
+			c.AddFunc(data.Cron, t.cronHandle(tj))
 			tj.Cron = c
 		}
 	}
@@ -140,28 +141,51 @@ func (t *taskLogic) CreateTask(data model.Task) error {
 func (t *taskLogic) EditTask(data model.Task) error {
 	tj, err := t.getTaskJob(data.Id)
 	if err != nil {
-		return errors.New("don't exist this task id")
+		return fmt.Errorf("task with id %v does not exist", data.Id)
 	}
+
 	if tj.Running {
-		return errors.New("can't edit when task is running")
+		return errors.New("can't edit task while it is running")
 	}
-	tj.Cron.Stop()
+
+	// 如果 Cron 已经存在，停止并清理
+	if tj.Cron != nil {
+		tj.Cron.Stop()
+		tj.Cron = nil
+	}
+
+	// 更新任务
 	tj.Task = &data
-	if tj.Task.Cron != nil {
-		if _, err := cron.ParseStandard(*tj.Task.Cron); err != nil {
-			return err
-		}
-		c := cron.New()
-		_, err := c.AddFunc(*data.Cron, t.cronHandle(tj))
-		if err != nil {
-			log.Logger.Errorw("定时任务创建失败", "err", err, "id", data.Id)
-			return err
-		}
-		if data.Enable {
-			c.Start()
-		}
-		tj.Cron = c
+
+	// 如果 Cron 字段为空，直接禁用任务并返回
+	if tj.Task.Cron == "" {
+		tj.Task.Enable = false
+		return repository.TaskRepository.EditTask(data)
 	}
+
+	// 校验 Cron 表达式
+	if _, err := cron.ParseStandard(tj.Task.Cron); err != nil {
+		tj.Task.Enable = false
+		return fmt.Errorf("invalid cron expression: %v", err)
+	}
+
+	// 创建 Cron 调度器
+	c := cron.New()
+	_, err = c.AddFunc(data.Cron, t.cronHandle(tj))
+	if err != nil {
+		log.Logger.Errorw("failed to create cron job", "err", err, "id", data.Id)
+		tj.Task.Enable = false
+		return fmt.Errorf("failed to create cron job: %v", err)
+	}
+
+	// 启动 Cron 调度器
+	if data.Enable {
+		c.Start()
+	}
+
+	tj.Cron = c
+
+	// 更新任务到数据库
 	return repository.TaskRepository.EditTask(data)
 }
 
@@ -170,14 +194,18 @@ func (t *taskLogic) EditTaskEnable(id int, status bool) error {
 	if err != nil {
 		return errors.New("don't exist this task id")
 	}
-	tj.Task.Enable = status
-	repository.TaskRepository.EditTaskEnable(id, status)
 	if tj.Cron != nil {
 		if status {
 			tj.Cron.Start()
 		} else {
 			tj.Cron.Stop()
 		}
+	} else if status {
+		return errors.New("cron job create failed")
+	}
+
+	if err := repository.TaskRepository.EditTaskEnable(id, status); err != nil {
+		return err
 	}
 	return nil
 }
