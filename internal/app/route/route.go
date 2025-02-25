@@ -19,7 +19,7 @@ import (
 func Route() {
 	r := gin.New()
 	r.Use(gin.Recovery())
-	if !config.CF.UserTui {
+	if !config.CF.Tui {
 		r.Use(gin.Logger())
 	}
 	routePathInit(r)

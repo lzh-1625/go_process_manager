@@ -74,7 +74,7 @@ func initConfiguration() {
 
 func initArgs() {
 	if len(os.Args) >= 2 && os.Args[1] == "tui" {
-		config.CF.UserTui = true
+		config.CF.Tui = true
 	}
 }
 

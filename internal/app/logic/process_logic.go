@@ -2,6 +2,7 @@ package logic
 
 import (
 	"errors"
+	"runtime"
 	"slices"
 	"strings"
 	"sync"
@@ -11,6 +12,7 @@ import (
 	"github.com/lzh-1625/go_process_manager/internal/app/repository"
 	"github.com/lzh-1625/go_process_manager/log"
 	"github.com/lzh-1625/go_process_manager/utils"
+	"github.com/shirou/gopsutil/mem"
 )
 
 type processCtlLogic struct {
@@ -118,7 +120,9 @@ func (p *processCtlLogic) getProcessInfoList(processConfiglist []model.Process) 
 			pi.StartTime = process.GetStartTimeFormat()
 			pi.User = process.GetUserString()
 			pi.Usage.Cpu = process.performanceStatus.cpu
+			pi.Usage.CpuCapacity = float64(runtime.NumCPU()) * 100.0
 			pi.Usage.Mem = process.performanceStatus.mem
+			pi.Usage.MemCapacity = float64(utils.UnwarpIgnore(mem.VirtualMemory()).Total >> 10)
 			pi.Usage.Time = process.performanceStatus.time
 			pi.TermType = process.Type()
 			pi.CgroupEnable = process.Config.cgroupEnable

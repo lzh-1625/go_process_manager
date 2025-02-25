@@ -77,7 +77,7 @@ func InitLog() {
 	atom := zap.NewAtomicLevelAt(level)
 	zap.NewDevelopmentConfig()
 	var outputPaths []string = []string{"info.log"}
-	if !config.CF.UserTui { // 不使用tui则打印日志到stdout
+	if !config.CF.Tui { // 不使用tui则打印日志到stdout
 		outputPaths = append(outputPaths, "stdout")
 	}
 	config := zap.Config{

@@ -283,7 +283,7 @@ func (p *ProcessBase) monitorHanler() {
 		}
 		p.AddRecordTime()
 		p.AddCpuUsage(cpuPercent)
-		p.AddMemUsage(float64(memInfo.RSS) / 1024.0)
+		p.AddMemUsage(float64(memInfo.RSS >> 10))
 		// log.Logger.Debugw("进程资源使用率获取成功", "cpu", cpuPercent, "mem", memInfo.RSS)
 		select {
 		case <-ticker.C:

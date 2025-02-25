@@ -36,7 +36,7 @@ type tui struct {
 var Tui = new(tui)
 
 func (t *tui) TermuiInit() {
-	if config.CF.UserTui {
+	if config.CF.Tui {
 		t.drawProcessList()
 	}
 }
