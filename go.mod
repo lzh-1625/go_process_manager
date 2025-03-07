@@ -94,7 +94,6 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/glebarez/sqlite v1.11.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/levigross/grequests v0.0.0-20231203190023-9c307ef1f48d
 	github.com/olivere/elastic/v7 v7.0.32
 	github.com/panjf2000/ants/v2 v2.10.0
 	github.com/robfig/cron/v3 v3.0.1
