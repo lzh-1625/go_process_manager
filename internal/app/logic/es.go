@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
+	"time"
 
 	"github.com/lzh-1625/go_process_manager/config"
 	"github.com/lzh-1625/go_process_manager/internal/app/model"
@@ -36,6 +37,7 @@ func (e *esLogic) InitEs() bool {
 		elastic.SetHttpClient(&http.Client{
 			Transport: &http.Transport{
 				MaxIdleConnsPerHost: config.CF.LogHandlerPoolSize,
+				IdleConnTimeout:     90 * time.Second,
 			},
 		}),
 	)
