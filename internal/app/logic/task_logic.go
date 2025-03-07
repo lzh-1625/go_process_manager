@@ -20,7 +20,7 @@ type taskLogic struct {
 	taskJobMap sync.Map
 }
 
-var TaskLogic taskLogic
+var TaskLogic = new(taskLogic)
 
 func (t *taskLogic) getTaskJob(id int) (*model.TaskJob, error) {
 	c, ok := t.taskJobMap.Load(id)
