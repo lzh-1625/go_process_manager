@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"reflect"
 
 	"github.com/lzh-1625/go_process_manager/config"
@@ -32,6 +33,11 @@ func (e *esLogic) InitEs() bool {
 		elastic.SetURL(config.CF.EsUrl),
 		elastic.SetBasicAuth(config.CF.EsUsername, config.CF.EsPassword),
 		elastic.SetSniff(false),
+		elastic.SetHttpClient(&http.Client{
+			Transport: &http.Transport{
+				MaxIdleConnsPerHost: config.CF.LogHandlerPoolSize,
+			},
+		}),
 	)
 	if err != nil {
 		config.CF.EsEnable = false
