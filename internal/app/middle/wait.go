@@ -10,10 +10,11 @@ import (
 )
 
 type waitCond struct {
-	cond    sync.Cond
-	ts      int64
-	timeMap sync.Map
-	trigger chan struct{}
+	cond            sync.Cond
+	ts              int64
+	timeMap         sync.Map
+	trigger         chan struct{}
+	doOntriggerFunc []func()
 }
 
 var (
@@ -40,6 +41,10 @@ func newWaitCond() *waitCond {
 	return wc
 }
 
+func (p *waitCond) RegisterFunc(f func()) {
+	p.doOntriggerFunc = append(p.doOntriggerFunc, f)
+}
+
 func (p *waitCond) Trigger() {
 	p.trigger <- struct{}{}
 	p.ts = time.Now().UnixMicro()
@@ -55,6 +60,9 @@ func (p *waitCond) WaitGetMiddel(c *gin.Context) {
 	p.cond.L.Lock()
 	defer p.cond.L.Unlock()
 	p.cond.Wait()
+	for i := range p.doOntriggerFunc {
+		p.doOntriggerFunc[i]()
+	}
 	c.Next()
 }
 

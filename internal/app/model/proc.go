@@ -26,4 +26,9 @@ type Usage struct {
 type State struct {
 	State constants.ProcessState `json:"state"`
 	Info  string                 `json:"info"`
+} 
+
+type NodeProcessInfo struct {
+	NodeName string
+	Data     []ProcessInfo
 }

@@ -32,5 +32,7 @@ type configuration struct {
 	CgroupPeriod              int64   `default:"100000" describe:"CgroupPeriod"`
 	CgroupSwapLimit           bool    `default:"false" describe:"cgroup swap限制"`
 	CondWaitTime              int     `default:"30" describe:"长轮询等待时间（秒）"`
+	ClusterEnable             bool    `default:"false" describe:"集群功能"`
+	MasterAddress             string  `default:"" describe:"机器主机地址"`
 	Tui                       bool    `default:"-"`
 }
