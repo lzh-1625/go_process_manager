@@ -15,7 +15,8 @@ type logApi struct{}
 
 var LogApi = new(logApi)
 
-func (a *logApi) GetLog(ctx *gin.Context, req model.GetLogReq) {
+func (a *logApi) GetLog(ctx *gin.Context) {
+	req := bind[model.GetLogReq](ctx)
 	if isAdmin(ctx) {
 		rOk(ctx, "Query successful!", logic.LogLogicImpl.Search(req, req.FilterName...))
 	} else {

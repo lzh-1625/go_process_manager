@@ -148,7 +148,6 @@ func (t *taskLogic) EditTask(data model.Task) error {
 		return errors.New("can't edit task while it is running")
 	}
 
-	// 如果 Cron 已经存在，停止并清理
 	if tj.Cron != nil {
 		tj.Cron.Stop()
 		tj.Cron = nil
@@ -182,7 +181,6 @@ func (t *taskLogic) EditTask(data model.Task) error {
 	if data.Enable {
 		c.Start()
 	}
-
 	tj.Cron = c
 
 	// 更新任务到数据库
@@ -203,7 +201,7 @@ func (t *taskLogic) EditTaskEnable(id int, status bool) error {
 	} else if status {
 		return errors.New("cron job create failed")
 	}
-
+	tj.Task.Enable = status
 	if err := repository.TaskRepository.EditTaskEnable(id, status); err != nil {
 		return err
 	}

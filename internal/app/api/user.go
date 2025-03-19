@@ -16,7 +16,8 @@ var UserApi = new(userApi)
 
 const DEFAULT_ROOT_PASSWORD = "root"
 
-func (u *userApi) LoginHandler(ctx *gin.Context, req map[string]string) {
+func (u *userApi) LoginHandler(ctx *gin.Context) {
+	req := bind[map[string]string](ctx)
 	account := req["account"]
 	password := req["password"]
 	errCheck(ctx, !u.checkLoginInfo(account, password), "Incorrect username or password!")
@@ -29,7 +30,8 @@ func (u *userApi) LoginHandler(ctx *gin.Context, req map[string]string) {
 	})
 }
 
-func (u *userApi) CreateUser(ctx *gin.Context, req model.User) {
+func (u *userApi) CreateUser(ctx *gin.Context) {
+	req := bind[model.User](ctx)
 	errCheck(ctx, req.Role == constants.ROLE_ROOT, "Creation of root accounts is forbidden!")
 	errCheck(ctx, req.Account == constants.CONSOLE, "Operation failed!")
 	errCheck(ctx, len(req.Password) < config.CF.UserPassWordMinLength, "Password is too short")
@@ -38,7 +40,8 @@ func (u *userApi) CreateUser(ctx *gin.Context, req model.User) {
 	rOk(ctx, "Operation successful!", nil)
 }
 
-func (u *userApi) ChangePassword(ctx *gin.Context, req model.User) {
+func (u *userApi) ChangePassword(ctx *gin.Context) {
+	req := bind[model.User](ctx)
 	reqUser := getUserName(ctx)
 	errCheck(ctx, getRole(ctx) != constants.ROLE_ROOT && req.Account != "", "Invalid parameters!")
 	var userName string

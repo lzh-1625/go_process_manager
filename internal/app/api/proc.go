@@ -12,7 +12,8 @@ type procApi struct{}
 
 var ProcApi = new(procApi)
 
-func (p *procApi) CreateNewProcess(ctx *gin.Context, req model.Process) {
+func (p *procApi) CreateNewProcess(ctx *gin.Context) {
+	req := bind[model.Process](ctx)
 	index, err := repository.ProcessRepository.AddProcessConfig(req)
 	errCheck(ctx, err != nil, err)
 	req.Uuid = index
@@ -83,7 +84,8 @@ func (p *procApi) GetProcessList(ctx *gin.Context) {
 	}
 }
 
-func (p *procApi) UpdateProcessConfig(ctx *gin.Context, req model.Process) {
+func (p *procApi) UpdateProcessConfig(ctx *gin.Context) {
+	req := bind[model.Process](ctx)
 	logic.ProcessCtlLogic.UpdateProcessConfig(req)
 	err := repository.ProcessRepository.UpdateProcessConfig(req)
 	errCheck(ctx, err != nil, err)

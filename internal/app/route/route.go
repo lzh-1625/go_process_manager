@@ -70,33 +70,33 @@ func routePathInit(r *gin.Engine) {
 
 			proConfigGroup := processGroup.Group("/config")
 			{
-				proConfigGroup.POST("", middle.RolePermission(constants.ROLE_ROOT), middle.ProcessWaitCond.WaitTriggerMiddel, bind(api.ProcApi.CreateNewProcess))
+				proConfigGroup.POST("", middle.RolePermission(constants.ROLE_ROOT), middle.ProcessWaitCond.WaitTriggerMiddel, api.ProcApi.CreateNewProcess)
 				proConfigGroup.DELETE("", middle.RolePermission(constants.ROLE_ROOT), middle.ProcessWaitCond.WaitTriggerMiddel, api.ProcApi.DeleteNewProcess)
-				proConfigGroup.PUT("", middle.RolePermission(constants.ROLE_ROOT), bind(api.ProcApi.UpdateProcessConfig))
+				proConfigGroup.PUT("", middle.RolePermission(constants.ROLE_ROOT), api.ProcApi.UpdateProcessConfig)
 				proConfigGroup.GET("", middle.RolePermission(constants.ROLE_ADMIN), api.ProcApi.GetProcessConfig)
 			}
 		}
 
-		taskGroup := apiGroup.Group("/task").Use(middle.RolePermission(constants.ROLE_ADMIN))
+		taskGroup := apiGroup.Group("/task")
 		{
-			taskGroup.GET("", api.TaskApi.GetTaskById)
-			taskGroup.GET("/all", api.TaskApi.GetTaskList)
-			taskGroup.GET("/all/wait", middle.TaskWaitCond.WaitGetMiddel, api.TaskApi.GetTaskList)
-			taskGroup.POST("", middle.TaskWaitCond.WaitTriggerMiddel, bind(api.TaskApi.CreateTask))
-			taskGroup.DELETE("", middle.TaskWaitCond.WaitTriggerMiddel, api.TaskApi.DeleteTaskById)
-			taskGroup.PUT("", middle.TaskWaitCond.WaitTriggerMiddel, bind(api.TaskApi.EditTask))
-			taskGroup.PUT("/enable", middle.TaskWaitCond.WaitTriggerMiddel, bind(api.TaskApi.EditTaskEnable))
-			taskGroup.GET("/start", api.TaskApi.StartTask)
-			taskGroup.GET("/stop", api.TaskApi.StopTask)
-			taskGroup.POST("/key", api.TaskApi.CreateTaskApiKey)
+			taskGroup.GET("", middle.RolePermission(constants.ROLE_ADMIN), api.TaskApi.GetTaskById)
+			taskGroup.GET("/all", middle.RolePermission(constants.ROLE_ADMIN), api.TaskApi.GetTaskList)
+			taskGroup.GET("/all/wait", middle.RolePermission(constants.ROLE_ADMIN), middle.TaskWaitCond.WaitGetMiddel, api.TaskApi.GetTaskList)
+			taskGroup.POST("", middle.RolePermission(constants.ROLE_ADMIN), middle.TaskWaitCond.WaitTriggerMiddel, api.TaskApi.CreateTask)
+			taskGroup.DELETE("", middle.RolePermission(constants.ROLE_ADMIN), middle.TaskWaitCond.WaitTriggerMiddel, api.TaskApi.DeleteTaskById)
+			taskGroup.PUT("", middle.RolePermission(constants.ROLE_ADMIN), middle.TaskWaitCond.WaitTriggerMiddel, api.TaskApi.EditTask)
+			taskGroup.PUT("/enable", middle.RolePermission(constants.ROLE_ADMIN), middle.TaskWaitCond.WaitTriggerMiddel, api.TaskApi.EditTaskEnable)
+			taskGroup.GET("/start", middle.RolePermission(constants.ROLE_ADMIN), api.TaskApi.StartTask)
+			taskGroup.GET("/stop", middle.RolePermission(constants.ROLE_ADMIN), api.TaskApi.StopTask)
+			taskGroup.POST("/key", middle.RolePermission(constants.ROLE_ADMIN), api.TaskApi.CreateTaskApiKey)
 			taskGroup.GET("/api-key/:key", api.TaskApi.RunTaskByKey)
 		}
 
 		userGroup := apiGroup.Group("/user")
 		{
-			userGroup.POST("/login", bind(api.UserApi.LoginHandler))
-			userGroup.POST("", middle.RolePermission(constants.ROLE_ROOT), bind((api.UserApi.CreateUser)))
-			userGroup.PUT("/password", middle.RolePermission(constants.ROLE_USER), bind(api.UserApi.ChangePassword))
+			userGroup.POST("/login", api.UserApi.LoginHandler)
+			userGroup.POST("", middle.RolePermission(constants.ROLE_ROOT), api.UserApi.CreateUser)
+			userGroup.PUT("/password", middle.RolePermission(constants.ROLE_USER), api.UserApi.ChangePassword)
 			userGroup.DELETE("", middle.RolePermission(constants.ROLE_ROOT), api.UserApi.DeleteUser)
 			userGroup.GET("", middle.RolePermission(constants.ROLE_ROOT), api.UserApi.GetUserList)
 		}
@@ -105,8 +105,8 @@ func routePathInit(r *gin.Engine) {
 		{
 			pushGroup.GET("/list", api.PushApi.GetPushList)
 			pushGroup.GET("", api.PushApi.GetPushById)
-			pushGroup.POST("", bind(api.PushApi.AddPushConfig))
-			pushGroup.PUT("", bind(api.PushApi.UpdatePushConfig))
+			pushGroup.POST("", api.PushApi.AddPushConfig)
+			pushGroup.PUT("", api.PushApi.UpdatePushConfig)
 			pushGroup.DELETE("", api.PushApi.DeletePushConfig)
 		}
 
@@ -120,36 +120,20 @@ func routePathInit(r *gin.Engine) {
 		permissionGroup := apiGroup.Group("/permission").Use(middle.RolePermission(constants.ROLE_ROOT))
 		{
 			permissionGroup.GET("/list", api.PermissionApi.GetPermissionList)
-			permissionGroup.PUT("", middle.ProcessWaitCond.WaitTriggerMiddel, bind(api.PermissionApi.EditPermssion))
+			permissionGroup.PUT("", middle.ProcessWaitCond.WaitTriggerMiddel, api.PermissionApi.EditPermssion)
 		}
 
 		logGroup := apiGroup.Group("/log").Use(middle.RolePermission(constants.ROLE_USER))
 		{
-			logGroup.POST("", bind(api.LogApi.GetLog))
+			logGroup.POST("", api.LogApi.GetLog)
 			logGroup.GET("/running", api.LogApi.GetRunningLog)
 		}
 
 		configGroup := apiGroup.Group("/config").Use(middle.RolePermission(constants.ROLE_ROOT))
 		{
 			configGroup.GET("", api.ConfigApi.GetSystemConfiguration)
-			configGroup.PUT("", bind(api.ConfigApi.SetSystemConfiguration))
+			configGroup.PUT("", api.ConfigApi.SetSystemConfiguration)
 			configGroup.PUT("/es", api.ConfigApi.EsConfigReload)
 		}
-	}
-}
-
-func bind[T any](f func(ctx *gin.Context, req T)) func(ctx *gin.Context) {
-	return func(ctx *gin.Context) {
-		var data T
-		err := ctx.ShouldBindJSON(&data)
-		if err != nil {
-			ctx.JSON(500, gin.H{
-				"code": -1,
-				"msg":  "Invalid parameters!",
-			})
-			ctx.Abort()
-			return
-		}
-		f(ctx, data)
 	}
 }

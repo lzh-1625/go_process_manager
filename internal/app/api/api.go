@@ -67,3 +67,9 @@ func getQueryString(ctx *gin.Context, query string) (s string) {
 	errCheck(ctx, s == "", "Invalid parameters!")
 	return
 }
+
+func bind[T any](ctx *gin.Context) T {
+	var data T
+	errCheck(ctx, ctx.ShouldBind(&data) != nil, "Invalid parameters!")
+	return data
+}

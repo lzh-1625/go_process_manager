@@ -11,7 +11,8 @@ var PermissionApi = new(permissionApi)
 
 type permissionApi struct{}
 
-func (p *permissionApi) EditPermssion(ctx *gin.Context, req model.Permission) {
+func (p *permissionApi) EditPermssion(ctx *gin.Context) {
+	req := bind[model.Permission](ctx)
 	err := repository.PermissionRepository.EditPermssion(req)
 	errCheck(ctx, err != nil, err)
 	rOk(ctx, "Operation successful!", nil)

@@ -20,13 +20,15 @@ func (p *pushApi) GetPushById(ctx *gin.Context) {
 	rOk(ctx, "Query successful!", repository.PushRepository.GetPushConfigById(id))
 }
 
-func (p *pushApi) AddPushConfig(ctx *gin.Context, req model.Push) {
+func (p *pushApi) AddPushConfig(ctx *gin.Context) {
+	req := bind[model.Push](ctx)
 	err := repository.PushRepository.AddPushConfig(req)
 	errCheck(ctx, err != nil, err)
 	rOk(ctx, "Operation successful!", nil)
 }
 
-func (p *pushApi) UpdatePushConfig(ctx *gin.Context, req model.Push) {
+func (p *pushApi) UpdatePushConfig(ctx *gin.Context) {
+	req := bind[model.Push](ctx)
 	err := repository.PushRepository.UpdatePushConfig(req)
 	errCheck(ctx, err != nil, err)
 	rOk(ctx, "Operation successful!", nil)

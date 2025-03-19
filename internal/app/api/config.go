@@ -15,7 +15,8 @@ func (c *configApi) GetSystemConfiguration(ctx *gin.Context) {
 	rOk(ctx, "Operation successful!", result)
 }
 
-func (c *configApi) SetSystemConfiguration(ctx *gin.Context, req map[string]string) {
+func (c *configApi) SetSystemConfiguration(ctx *gin.Context) {
+	req := bind[map[string]string](ctx)
 	errCheck(ctx, logic.ConfigLogic.SetSystemConfiguration(req) != nil, "Set config fail!")
 	rOk(ctx, "Operation successful!", nil)
 }

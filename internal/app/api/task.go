@@ -12,7 +12,8 @@ type taskApi struct{}
 
 var TaskApi = new(taskApi)
 
-func (t *taskApi) CreateTask(ctx *gin.Context, req model.Task) {
+func (t *taskApi) CreateTask(ctx *gin.Context) {
+	req := bind[model.Task](ctx)
 	err := logic.TaskLogic.CreateTask(req)
 	errCheck(ctx, err != nil, err)
 	rOk(ctx, "Operation successful!", nil)
@@ -45,13 +46,15 @@ func (t *taskApi) StopTask(ctx *gin.Context) {
 	rOk(ctx, "Operation successful!", nil)
 }
 
-func (t *taskApi) EditTask(ctx *gin.Context, req model.Task) {
+func (t *taskApi) EditTask(ctx *gin.Context) {
+	req := bind[model.Task](ctx)
 	err := logic.TaskLogic.EditTask(req)
 	errCheck(ctx, err != nil, err)
 	rOk(ctx, "Operation successful!", nil)
 }
 
-func (t *taskApi) EditTaskEnable(ctx *gin.Context, req model.Task) {
+func (t *taskApi) EditTaskEnable(ctx *gin.Context) {
+	req := bind[model.Task](ctx)
 	err := logic.TaskLogic.EditTaskEnable(req.Id, req.Enable)
 	errCheck(ctx, err != nil, err)
 	rOk(ctx, "Operation successful!", nil)
