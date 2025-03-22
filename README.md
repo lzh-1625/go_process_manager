@@ -4,7 +4,7 @@ Go Process Manager is a process management tool developed based on Golang, offer
 
 ---
 
-## [View Chinese Version](./README_CN.md)
+## [中文](./README_CN.md)
 
 ## Features
 
