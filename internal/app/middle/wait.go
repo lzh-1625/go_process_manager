@@ -70,8 +70,8 @@ func (p *waitCond) timing() { // 添加定时信号清理阻塞协程
 		select {
 		case <-ticker.C:
 		case <-p.trigger:
-			ticker.Reset(time.Second * time.Duration(config.CF.CondWaitTime))
 		}
+		ticker.Reset(time.Second * time.Duration(config.CF.CondWaitTime))
 		p.cond.Broadcast()
 	}
 }
