@@ -25,12 +25,9 @@ func (p *pushLogic) Push(ids []int, placeholders map[string]string) {
 		if v.Enable {
 			var resp *http.Response
 			var reader io.Reader = nil
-			var url string = v.Url
+			var url string = p.getReplaceMessage(placeholders, v.Url)
 			if v.Method == http.MethodPost {
 				reader = strings.NewReader(p.getReplaceMessage(placeholders, v.Body))
-			}
-			if v.Method == http.MethodGet {
-				url = p.getReplaceMessage(placeholders, url)
 			}
 			req, err := http.NewRequest(v.Method, url, reader)
 			if err != nil {

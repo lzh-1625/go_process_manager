@@ -1,150 +1,150 @@
 # Go Process Manager
 
-Go Process Manager 是一个基于 Golang 开发的进程管理工具，提供了类似 `screen` 的进程管理功能，并支持 Web UI 可视化操作。该工具集成了日志管理、权限控制、进程性能监控、状态推送等功能，支持通过 `cgroup` 实现 CPU 和内存限制，同时还提供了任务管理和定时任务功能。
+Go Process Manager is a process management tool developed based on Golang, offering process management capabilities similar to `screen`, and supports Web UI for visual operations. This tool integrates log management, permission control, process performance monitoring, status push, and more. It supports CPU and memory limits through `cgroup` and also provides task management and scheduled task functionalities.
 
 ---
 
-## 功能特性
+## [View Chinese Version](./README_CN.md)
 
-### 核心功能
+## Features
 
-- **进程管理**支持进程的创建、启动、停止、重启和删除操作，提供类似 `screen` 的多进程管理能力。
-- **Web UI 可视化操作**提供友好的 Web 界面，用户可以通过浏览器轻松管理进程、查看日志和监控性能。
-- **日志管理**支持将日志存储到 Elasticsearch 8 或 SQLite 中，提供高效的日志查询和分析功能。
-- **权限管理**提供三种角色（root、admin、user）的权限控制，确保系统安全性和灵活性。
-- **进程性能监控**实时监控进程的 CPU、内存等资源使用情况，帮助用户优化系统性能。
-- **进程状态推送**支持进程状态的实时推送，用户可以通过 Web UI 或 API 推送进程的最新状态。
-- **资源限制**通过 `cgroup` 实现 CPU 和内存的限制，防止进程占用过多系统资源。
-- **任务管理**
-  支持任务管理、定时任务和 API 调用，满足自动化运维需求。
+### Core Features
 
----
-
-### 终端类型
-
-- **pty（伪终端）**基于伪终端实现，支持 ANSI 字符和快捷键操作，适合交互式命令行程序。
-- **std（标准输入输出）**
-  基于标准输入输出管道实现，适合非交互式程序或脚本。
+- **Process Management**: Supports creating, starting, stopping, restarting, and deleting processes, providing multi-process management capabilities similar to `screen`.
+- **Web UI for Visual Operations**: Offers a user-friendly web interface, allowing users to easily manage processes, view logs, and monitor performance through a browser.
+- **Log Management**: Supports storing logs in Elasticsearch 8 or SQLite, providing efficient log query and analysis capabilities.
+- **Permission Management**: Provides role-based access control with three roles (root, admin, user), ensuring system security and flexibility.
+- **Process Performance Monitoring**: Real-time monitoring of CPU, memory, and other resource usage, helping users optimize system performance.
+- **Process Status Push**: Supports real-time status push for processes, allowing users to receive the latest process status via Web UI or API.
+- **Resource Limits**: Implements CPU and memory limits through `cgroup`, preventing processes from consuming excessive system resources.
+- **Task Management**: Supports task management, scheduled tasks, and API calls, meeting the needs of automated operations.
 
 ---
 
-## 角色权限
+### Terminal Types
 
-| 角色  | 角色管理 | 进程创建 | 操控进程 | 日志查看 | 任务管理 |
-| ----- | -------- | -------- | -------- | -------- | -------- |
-| root  | ✔       | ✔       | ✔       | ✔       | ✔       |
-| admin | ×       | ×       | ✔       | ✔       | ✔       |
-| user  | ×       | ×       | 自定义   | 自定义   | ×       |
-
-- **root**：拥有最高权限，可以管理所有进程、日志和用户角色。
-- **admin**：可以操控进程和查看日志，但不能创建进程或管理角色。
-- **user**：权限可自定义，适合普通用户使用。
+- **pty (Pseudo Terminal)**: Based on pseudo terminals, supports ANSI characters and shortcut key operations, suitable for interactive command-line programs.
+- **std (Standard Input/Output)**: Based on standard input/output pipes, suitable for non-interactive programs or scripts.
 
 ---
 
-## 使用指南
+## Role Permissions
 
-### 启动进程
+| Role  | Role Management | Process Creation | Process Control | Log Viewing | Task Management |
+| ----- | --------------- | ---------------- | --------------- | ----------- | --------------- |
+| root  | ✔              | ✔               | ✔              | ✔          | ✔              |
+| admin | ×              | ×               | ✔              | ✔          | ✔              |
+| user  | ×              | ×               | Custom          | Custom      | ×              |
+
+- **root**: Has the highest permissions, can manage all processes, logs, and user roles.
+- **admin**: Can control processes and view logs but cannot create processes or manage roles.
+- **user**: Permissions can be customized, suitable for regular users.
+
+---
+
+## User Guide
+
+### Starting the Process
 
 #### Windows
 
-1. 下载 Windows 版本的二进制文件。
-2. 双击运行即可启动服务。
+1. Download the Windows version of the binary file.
+2. Double-click to run and start the service.
 
 #### Linux
 
-1. 下载 Linux 版本的二进制文件。
-2. 使用以下命令赋予执行权限并启动：
+1. Download the Linux version of the binary file.
+2. Use the following commands to grant execution permissions and start:
 
    ```bash
    chmod 777 ./go_process_manager
    ./go_process_manager
    ```
 
-### Web 界面
+### Web Interface
 
-1. 启动服务后，访问 `http://[ip]:8797`。
-2. 使用默认账号密码 `root/root` 登录。
+1. After starting the service, access `http://[ip]:8797`.
+2. Log in with the default credentials `root/root`.
 
-### Demo 演示
+### Demo
 
-访问 [Demo 演示](http://xcon.top:9787/process) 体验功能，使用账号 `root/root` 登录。
-
----
-
-## 界面展示
-
-### 进程管理
-
-![进程管理界面](https://github.com/lzh-1625/go_process_manager/assets/59822923/50f31b99-41d4-4d8c-88fe-20c978385155)
-
-- **进程列表**：显示所有运行的进程，包括进程 ID、名称、状态、资源使用情况等。
-- **操作按钮**：支持启动、停止、重启和删除进程。
-
-### 终端操作
-
-![终端操作界面](https://github.com/lzh-1625/go_process_manager/assets/59822923/63eb6bec-353f-4d12-a1d9-95d89fccdac3)
-
-- **终端模拟**：支持 ANSI 字符和快捷键操作，提供类似本地终端的体验。
-- **输入输出**：实时显示进程的标准输入和输出。
-
-### 日志查看
-
-![日志查看界面](https://github.com/lzh-1625/go_process_manager/assets/59822923/6af8e228-7709-45c5-aba8-4b61dc825026)
-
-- **日志查询**：支持按时间、进程 ID、操作用户等条件过滤日志。
+Visit the [Demo](http://xcon.top:9787/process) to experience the features. Use the credentials `root/root` to log in.
 
 ---
 
-## 补充说明
+## Interface Showcase
 
-### 日志管理
+### Process Management
 
-- **Elasticsearch 8**：适合大规模日志存储和查询，支持分布式部署。
-- **SQLite**：轻量级日志存储，适合单机或小规模使用。
+![Process Management Interface](https://github.com/lzh-1625/go_process_manager/assets/59822923/50f31b99-41d4-4d8c-88fe-20c978385155)
 
-### 权限控制
+- **Process List**: Displays all running processes, including process ID, name, status, resource usage, etc.
+- **Action Buttons**: Supports starting, stopping, restarting, and deleting processes.
 
-- **root 用户**：拥有最高权限，可以管理所有进程、日志和用户角色。
-- **admin 用户**：可以操控进程和查看日志，适合运维人员使用。
-- **user 用户**：权限可自定义，适合普通用户或开发人员使用。
+### Terminal Operations
 
-### 资源限制
+![Terminal Operations Interface](https://github.com/lzh-1625/go_process_manager/assets/59822923/63eb6bec-353f-4d12-a1d9-95d89fccdac3)
 
-- **CPU 限制**：通过 `cgroup` 设置进程的 CPU 使用上限。
-- **内存限制**：通过 `cgroup` 设置进程的内存使用上限。
+- **Terminal Emulation**: Supports ANSI characters and shortcut key operations, providing an experience similar to a local terminal.
+- **Input/Output**: Real-time display of process standard input and output.
 
-### 任务管理
+### Log Viewing
 
-- **定时任务**：支持 Cron 表达式，用户可以创建定时任务。
-- **API 调用**：提供 API触发任务。
-- **任务流**：任务的链式执行。
-- **触发事件**：通过进程的停止、启动、异常触发任务。
+![Log Viewing Interface](https://github.com/lzh-1625/go_process_manager/assets/59822923/6af8e228-7709-45c5-aba8-4b61dc825026)
+
+- **Log Query**: Supports filtering logs by time, process ID, operator, etc.
 
 ---
 
-## 开发与部署
+## Additional Notes
 
-### 环境要求
+### Log Management
 
-- **Golang**：版本 1.18 或以上。
-- **Elasticsearch 8**（可选）：用于日志存储。
-- **SQLite**（可选）：用于轻量级日志存储。
+- **Elasticsearch 8**: Suitable for large-scale log storage and query, supports distributed deployment.
+- **SQLite**: Lightweight log storage, suitable for single-machine or small-scale use.
 
-### 编译与运行
+### Permission Control
 
-1. 克隆项目：
+- **root User**: Has the highest permissions, can manage all processes, logs, and user roles.
+- **admin User**: Can control processes and view logs, suitable for operations personnel.
+- **user User**: Permissions can be customized, suitable for regular users or developers.
+
+### Resource Limits
+
+- **CPU Limits**: Set CPU usage limits for processes through `cgroup`.
+- **Memory Limits**: Set memory usage limits for processes through `cgroup`.
+
+### Task Management
+
+- **Scheduled Tasks**: Supports Cron expressions, allowing users to create scheduled tasks.
+- **API Calls**: Provides APIs to trigger tasks.
+- **Task Flow**: Chain execution of tasks.
+- **Trigger Events**: Trigger tasks through process stop, start, or exceptions.
+
+---
+
+## Development and Deployment
+
+### Environment Requirements
+
+- **Golang**: Version 1.18 or higher.
+- **Elasticsearch 8** (optional): For log storage.
+- **SQLite** (optional): For lightweight log storage.
+
+### Compilation and Execution
+
+1. Clone the project:
 
    ```bash
    git clone https://github.com/lzh-1625/go_process_manager.git
    cd go_process_manager
    ```
-2. 编译项目：
+2. Compile the project:
 
    ```bash
    go build -o go_process_manager
    ```
-3. 运行项目：
+3. Run the project:
 
    ```bash
    ./go_process_manager
@@ -152,21 +152,21 @@ Go Process Manager 是一个基于 Golang 开发的进程管理工具，提供�
 
 ---
 
-## 贡献与反馈
+## Contributions and Feedback
 
-欢迎提交 Issue 和 Pull Request，帮助我们改进 Go Process Manager。如果有任何问题或建议，请通过 [GitHub Issues](https://github.com/lzh-1625/go_process_manager/issues) 反馈。
-
----
-
-## 许可证
-
-本项目采用 [MIT 许可证](https://opensource.org/licenses/MIT)，详情请参阅 [LICENSE](LICENSE) 文件。
+We welcome submitting Issues and Pull Requests to help improve Go Process Manager. If you have any questions or suggestions, please provide feedback via [GitHub Issues](https://github.com/lzh-1625/go_process_manager/issues).
 
 ---
 
-## 联系我们
+## License
 
-- **作者**：lzh-1625
-- **GitHub**：[go_process_manager](https://github.com/lzh-1625/go_process_manager)
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT). For more details, please refer to the [LICENSE](LICENSE) file.
 
-感谢您使用 Go Process Manager！希望这个工具能为您的进程管理带来便利。
+---
+
+## Contact Us
+
+- **Author**: lzh-1625
+- **GitHub**: [go_process_manager](https://github.com/lzh-1625/go_process_manager)
+
+Thank you for using Go Process Manager! We hope this tool brings convenience to your process management.
