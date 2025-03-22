@@ -1,8 +1,16 @@
+<div align="center">
+  <br/>
+  <img src="https://raw.githubusercontent.com/lzh-1625/go_process_manager/refs/heads/master/resources/templates/favicon.ico" alt="GPM logo">
+  <br/>
+</div>
+
+
 # Go Process Manager
 
 Go Process Manager is a process management tool developed based on Golang, offering process management capabilities similar to `screen`, and supports Web UI for visual operations. This tool integrates log management, permission control, process performance monitoring, status push, and more. It supports CPU and memory limits through `cgroup` and also provides task management and scheduled task functionalities.
 
 ---
+
 
 ## [View Chinese Version](./README_CN.md)
 
